@@ -93,6 +93,132 @@ const CallToAction: React.FC<{onStartRegistration: () => void}> = ({ onStartRegi
     </div>
 );
 
+// ฟังก์ชันสำหรับดึงข้อมูลงานของวันนี้
+const getTodayTask = () => {
+    const today = new Date();
+    const day = today.getDate();
+    
+    // ข้อมูลตัวอย่างสำหรับปฏิทินแนวทางปฏิบัติ
+    const sampleCalendarTasks = {
+        '13': {
+            id: 1,
+            title: 'เพาะปลูก',
+            description: 'เตรียมดินและปลูกกล้าที่ได้รับมา',
+            type: 'planting',
+            day: 13,
+            dayName: 'วันพฤหัสบดี'
+        },
+        '19': {
+            id: 2,
+            title: 'เพาะปลูก',
+            description: 'เตรียมดินและปลูกกล้าที่ได้รับมา',
+            type: 'planting',
+            day: 19,
+            dayName: 'วันพุธ'
+        },
+        '20': {
+            id: 3,
+            title: 'เตรียมดิน',
+            description: 'เตรียมดินสำหรับปลูกไผ่ในแปลงที่ 2',
+            type: 'practice',
+            day: 20,
+            dayName: 'วันพฤหัสบดี'
+        },
+        '21': {
+            id: 4,
+            title: 'รดน้ำต้นไม้',
+            description: 'รดน้ำต้นไผ่ในแปลงที่ 1',
+            type: 'practice',
+            day: 21,
+            dayName: 'วันศุกร์'
+        },
+        '22': {
+            id: 5,
+            title: 'ตรวจสอบสุขภาพต้นไม้',
+            description: 'ตรวจสอบสุขภาพและโรคของต้นไผ่',
+            type: 'practice',
+            day: 22,
+            dayName: 'วันเสาร์'
+        },
+        '23': {
+            id: 6,
+            title: 'เก็บเกี่ยวผลผลิต',
+            description: 'เก็บเกี่ยวผลผลิตจากแปลงไผ่',
+            type: 'harvest',
+            day: 23,
+            dayName: 'วันอาทิตย์'
+        }
+    };
+
+    // ฟังก์ชันสำหรับแปลงชื่อวันเป็นภาษาไทย
+    const getThaiDayName = (date: Date) => {
+        const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+        return thaiDays[date.getDay()];
+    };
+
+    // ตรวจสอบว่ามีงานในวันนี้หรือไม่
+    const todayTask = sampleCalendarTasks[day.toString()];
+    
+    if (todayTask) {
+        return {
+            ...todayTask,
+            day: day,
+            dayName: getThaiDayName(today)
+        };
+    }
+
+    // ถ้าไม่มีงานในวันนี้ ให้แสดงข้อความว่าไม่มีงาน
+    return {
+        id: 0,
+        title: 'ไม่มีงานในวันนี้',
+        description: 'วันนี้ไม่มีงานที่ต้องทำ',
+        type: 'none',
+        day: day,
+        dayName: getThaiDayName(today)
+    };
+};
+
+// คอมโพเนนต์สำหรับแสดงรายการปฏิทิน
+const CalendarTaskCard: React.FC<{ task: any; onClick: () => void }> = ({ task, onClick }) => {
+    const isNoTask = task.type === 'none';
+    
+    return (
+        <div 
+            className={`flex items-center rounded-xl shadow-md ${
+                isNoTask 
+                    ? 'bg-cyan-100 cursor-default' 
+                    : 'bg-white cursor-pointer hover:shadow-lg'
+            }`}
+            onClick={isNoTask ? undefined : onClick}
+        >
+            {/* ส่วนซ้าย - วันที่ */}
+            <div className="bg-cyan-100 rounded-l-xl p-3 mr-4 flex-shrink-0 flex flex-col justify-center items-center min-h-[80px] w-[30%]">
+                <div className="text-2xl font-bold text-blue-800 text-center">{task.day}</div>
+                <div className="text-xs font-semibold text-blue-800 text-center mt-1">{task.dayName}</div>
+            </div>
+            
+            {/* ส่วนขวา - ข้อมูลงาน */}
+            <div className="flex-1 flex items-center justify-start relative pl-[10%]">
+                <div className="flex items-center">
+                    {isNoTask ? (
+                        <Icons.CalendarIcon className="w-6 h-6 text-gray-500 mr-3" />
+                    ) : (
+                        <Icons.SproutIcon className="w-6 h-6 text-blue-800 mr-3" />
+                    )}
+                    <div>
+                        <div className={`font-semibold ${isNoTask ? 'text-gray-500' : 'text-blue-800'}`}>
+                            {task.title}
+                        </div>
+                    </div>
+                </div>
+                {!isNoTask && (
+                    <Icons.ChevronRightIcon className="w-7 h-7 text-blue-800 absolute right-4" />
+                )}
+            </div>
+        </div>
+    );
+};
+
 
 const Section: React.FC<{ title: string; children: React.ReactNode; onViewMore?: () => void; }> = ({ title, children, onViewMore }) => (
     <div className="mt-6 px-4">
@@ -171,10 +297,11 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ onMenuClick, onNotifi
                 <WeatherCard />
                 <CallToAction onStartRegistration={onStartRegistration} />
 
-                <Section title="ปฏิทินแนวทางปฏิบัติ">
-                    <div className="bg-cyan-100 rounded-xl p-10 text-center text-slate-500 font-semibold">
-                        ไม่มีข้อมูล
-                    </div>
+                <Section title="ปฏิทินแนวทางปฏิบัติ" onViewMore={() => onNavigate(Page.PRACTICE_CALENDAR)}>
+                    <CalendarTaskCard 
+                        task={getTodayTask()} 
+                        onClick={() => onNavigate(Page.PRACTICE_CALENDAR)}
+                    />
                 </Section>
 
                 <Section title="ตรวจสอบสถานะ" onViewMore={() => onNavigate(Page.CHECK_STATUS)}>

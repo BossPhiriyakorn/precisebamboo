@@ -10,6 +10,10 @@ import Card from '../../components/Card';
 import UserManagementPage from './UserManagementPage';
 import CommunityManagementPage from './CommunityManagementPage';
 import PolicyManagementPage from './PolicyManagementPage';
+import AdminCalendarPage from './AdminCalendarPage';
+import QueueSeedlingPage from './QueueSeedlingPage';
+import QueueCuttingPage from './QueueCuttingPage';
+import * as mockData from '../../data/mockData';
 
 
 // Props ที่คอมโพเนนตต้องการ
@@ -82,9 +86,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ onLogout, policyContent, term
             case 'carbon_credit':
                 return <PlaceholderContent title="คาร์บอนเครดิต" />;
             case 'queue_seedling':
-                return <PlaceholderContent title="การจัดการคิว: จองคิวขอรับกล้าพันธุ์" />;
+                return <QueueSeedlingPage />;
             case 'queue_cutting':
-                return <PlaceholderContent title="การจัดการคิว: จองคิวตัดไผ่" />;
+                return <QueueCuttingPage />;
+            case 'calendar':
+                return <AdminCalendarPage bookings={[...mockData.farmerBookings, ...mockData.factorySchedule]} />;
 
             default:
                 return <AdminDashboard />;

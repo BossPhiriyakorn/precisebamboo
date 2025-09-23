@@ -11,6 +11,7 @@ export type AdminPageKey =
     | 'farmer_list'
     | 'factory_list'
     | 'shipments'
+    | 'calendar'
     | 'users_farmer'
     | 'users_factory'
     | 'users_promoter'
@@ -144,6 +145,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, setActivePage, 
                 <MainMenuItem label="รายชื่อเกษตรกร" pageKey="farmer_list" icon={Icons.SproutIcon} isActive={activePage === 'farmer_list'} onClick={() => setActivePage('farmer_list')} />
                 <MainMenuItem label="รายชื่อโรงงาน" pageKey="factory_list" icon={Icons.BuildingOfficeIcon} isActive={activePage === 'factory_list'} onClick={() => setActivePage('factory_list')} />
                 <MainMenuItem label="รายการขนส่ง" pageKey="shipments" icon={Icons.TruckIcon} isActive={activePage === 'shipments'} onClick={() => setActivePage('shipments')} />
+                <MainMenuItem label="ปฏิทิน" pageKey="calendar" icon={Icons.CalendarIcon} isActive={activePage === 'calendar'} onClick={() => setActivePage('calendar')} />
                 
                 {/* เมนูหลัก: ผู้ใช้งานระบบ */}
                 <div>

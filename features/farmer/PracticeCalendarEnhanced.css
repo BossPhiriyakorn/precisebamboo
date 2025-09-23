@@ -1,0 +1,87 @@
+/* PracticeCalendarEnhanced.css */
+/* Custom styling for DayPilot calendar */
+
+.month_default_main:not(.default) {
+    --dp-month-event-border-radius: 8px;
+    --dp-month-event-color: #ffffff;
+    --dp-month-event-border-color: #777777;
+    --dp-month-event-background: #636363;
+    --dp-month-event-bar-width: 30px;
+}
+
+body .month_default_event_inner {
+    padding-left: 35px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body .month_default_event_bar {
+    left: 0px;
+    width: 30px;
+}
+
+body .month_default_event_bar_inner {
+    background: #888888;
+    border-radius: 8px;
+}
+
+/* Context menu icons */
+.icon:before {
+    position: absolute;
+    left: 0px;
+    margin-left: 8px;
+    margin-top: 3px;
+    width: 14px;
+    height: 14px;
+    content: '';
+    border-radius: 2px;
+}
+
+.icon-blue:before { background-color: #3c78d8; }
+.icon-green:before { background-color: #6aa84f; }
+.icon-yellow:before { background-color: #e69138; }
+.icon-red:before { background-color: #cc0000; }
+
+/* Calendar cell styling */
+.month_default_main .month_default_cell {
+    background-color: #f8f9fa;
+}
+
+.month_default_main .month_default_cell_today {
+    background-color: #e3f2fd;
+}
+
+.month_default_main .month_default_cell_header {
+    background-color: #f1f3f4;
+    color: #5f6368;
+    font-weight: 500;
+}
+
+/* Event styling */
+.month_default_event {
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.month_default_event:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Custom colors for practice activities */
+.practice-planting {
+    background-color: #3d85c6 !important;
+}
+
+.practice-cutting {
+    background-color: #6aa84f !important;
+}
+
+.practice-fertilizing {
+    background-color: #ecb823 !important;
+}
+
+.practice-checking {
+    background-color: #d5663e !important;
+}

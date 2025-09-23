@@ -20,6 +20,7 @@ const sidebarItems = [
     { label: 'ตรวจสอบสถานะ', page: Page.CHECK_STATUS, icon: 'Frame 1597884474.png', isImage: true },
     { label: 'จองคิว', page: Page.BOOKING, icon: 'Icon Menu (3).png', isImage: true },
     { label: 'สถานะขนส่ง', page: Page.SHIPMENT_STATUS, icon: 'Icon Menu (4).png', isImage: true },
+    { label: 'ปฎิทินการปฎิบัตร', page: Page.PRACTICE_CALENDAR, icon: 'Icon Menu (3).png', isImage: true },
 ];
 
 
@@ -79,7 +80,7 @@ const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isOpen, onClose, profile,
                             const isPlotManagement = item.page === Page.PLOT_MANAGEMENT;
                             const isBooking = item.page === Page.BOOKING;
                             const isShipmentStatus = item.page === Page.SHIPMENT_STATUS;
-                            const isDisabled = isPlotManagement || isBooking || isShipmentStatus;
+                            const isDisabled = isPlotManagement || isShipmentStatus;
                             return (
                                 <button
                                     key={item.page}
@@ -99,7 +100,7 @@ const FarmerSidebar: React.FC<FarmerSidebarProps> = ({ isOpen, onClose, profile,
                                                 className="w-8.4 h-8.4 flex-shrink-0" 
                                             />
                                         ) : (
-                                            <item.icon className="w-8.4 h-8.4 flex-shrink-0" />
+                                            <item.icon />
                                         )}
                                         <span>{item.label}</span>
                                     </div>

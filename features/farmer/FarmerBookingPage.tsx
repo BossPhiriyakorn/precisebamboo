@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Booking, BookingStatus, Page, Plot } from '../../types';
 import * as Icons from '../../constants';
 import FarmerHeader from './FarmerHeader';
+import BookingMenu from '../../components/BookingMenu';
 import { mockPlots, mockBambooSpeciesList } from '../../data/mockData';
 
 // Props
@@ -22,12 +23,6 @@ type ListFilterType = 'จองคิวรับกล้าพันธุ์
 // Constants & Helpers
 // =================================================================
 
-const BOOKING_MENU_ITEMS = {
-    LIST: { type: null, title: 'รายการนัดหมาย' },
-    SEEDLING: { type: 'จองคิวรับกล้าพันธุ์', title: 'จองคิวขอรับกล้าพันธุ์' },
-    HARVEST: { type: 'จองคิวการตัดไผ่', title: 'จองคิวการตัดไผ่' },
-    CONTRACT: { type: 'จองคิวทำสัญญา', title: 'จองคิวทำสัญญา' },
-};
 
 const formatThaiDate = (dateStr: string): string => {
     const parts = dateStr.split('/');
@@ -201,29 +196,6 @@ const SeedlingBookingModal: React.FC<{
 // Sub-components
 // =================================================================
 
-const MenuButton: React.FC<{
-    label: string;
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-    onClick: () => void;
-    alignIcon?: 'left' | 'right';
-}> = ({ label, icon: Icon, onClick, alignIcon = 'left' }) => {
-    const iconElement = (
-        <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
-            <Icon className="w-10 h-10 text-white" />
-        </div>
-    );
-    
-    return (
-        <button
-            onClick={onClick}
-            className={`w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-2xl p-6 flex items-center justify-between shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}
-        >
-            {alignIcon === 'left' && iconElement}
-            <span className={`text-2xl font-bold ${alignIcon === 'left' ? 'text-right' : 'text-left'}`}>{label}</span>
-            {alignIcon === 'right' && iconElement}
-        </button>
-    );
-};
 
 const AppointmentCard: React.FC<{ booking: Booking, onViewDetails: (booking: Booking) => void }> = ({ booking, onViewDetails }) => {
     const getStatusStyles = (status: BookingStatus) => {
@@ -306,8 +278,17 @@ const FarmerBookingPage: React.FC<FarmerBookingPageProps> = ({ bookings, onAddBo
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [isCreateModalOpen, setCreateModalOpen] = useState(false);
     
-    const handleMenuClick = (type: ListFilterType, title: string) => {
-        setListFilterType(type);
+    const handleMenuClick = (type: string, title: string) => {
+        // Map the new menu IDs to the existing filter types
+        const typeMapping: { [key: string]: ListFilterType } = {
+            'appointment-list': null,
+            'seedling-queue': 'จองคิวรับกล้าพันธุ์',
+            'cutting-queue': 'จองคิวการตัดไผ่',
+            'contract-queue': 'จองคิวทำสัญญา'
+        };
+        
+        const mappedType = typeMapping[type] || null;
+        setListFilterType(mappedType);
         setPageTitle(title as Page);
         setView('list');
     };
@@ -375,27 +356,8 @@ const FarmerBookingPage: React.FC<FarmerBookingPageProps> = ({ bookings, onAddBo
             );
         }
 
-        // Landing View - Coming Soon
-        return (
-            <div className="flex flex-col items-center justify-center py-16 px-4">
-                <div className="text-center space-y-6">
-                    <div className="w-24 h-24 mx-auto bg-amber-100 rounded-full flex items-center justify-center">
-                        <Icons.CalendarIcon className="w-12 h-12 text-amber-600" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-slate-800 mb-2">จองคิว</h2>
-                        <p className="text-slate-600 text-lg">เร็วๆ นี้</p>
-                    </div>
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-md">
-                        <p className="text-amber-800 text-sm">
-                            ระบบจองคิวกำลังอยู่ในระหว่างการพัฒนา 
-                            <br />
-                            ขออภัยในความไม่สะดวก
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
+        // Landing View - Booking Menu
+        return <BookingMenu onMenuClick={handleMenuClick} />;
     };
 
     return (
@@ -416,7 +378,7 @@ const FarmerBookingPage: React.FC<FarmerBookingPageProps> = ({ bookings, onAddBo
                 </svg>
             </div>
 
-            <main className="container mx-auto p-4 sm:p-6 lg:p-8 -mt-16 relative z-10">
+            <main className="container mx-auto p-4 sm:p-6 lg:p-8 mt-8 relative z-10">
                 {renderContent()}
             </main>
 
