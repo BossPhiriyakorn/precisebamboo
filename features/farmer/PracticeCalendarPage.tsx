@@ -65,8 +65,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         return calendar;
     };
 
-<<<<<<< HEAD
-=======
     // ฟังก์ชันสำหรับการสร้างตารางเวลา
     const generateTimeSlots = () => {
         const timeSlots = [];
@@ -100,8 +98,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         }
         return weekDays;
     };
-
->>>>>>> master
     // ฟังก์ชันสำหรับการเปลี่ยนเดือน
     const changeMonth = (direction: 'prev' | 'next') => {
         setCurrentDate(prevDate => {
@@ -115,10 +111,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         });
     };
 
-<<<<<<< HEAD
-    // ข้อมูลตัวอย่างสำหรับวันที่ที่มีกิจกรรม
-    const practiceDays = [13, 19]; // วันที่ 13 และ 19 มีกิจกรรม
-=======
     // ฟังก์ชันสำหรับการเปลี่ยนวัน
     const changeDay = (direction: 'prev' | 'next') => {
         setCurrentDate(prevDate => {
@@ -143,8 +135,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         setCurrentDate(clickedDate);
         setViewMode('day');
     };
-
-
 
     // ฟังก์ชันสำหรับการดึงงานของวันที่
     const getTasksForDate = (day: number) => {
@@ -367,17 +357,13 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
             }
         ]
     };
->>>>>>> master
 
     const calendar = generateCalendar();
     const thaiMonth = getThaiMonthName(currentDate.getMonth());
     const buddhistYear = getBuddhistYear(currentDate);
-<<<<<<< HEAD
-=======
     const timeSlots = generateTimeSlots();
     const weekDays = generateWeekDays();
     const dayTasks = getTasksForDayView(currentDate);
->>>>>>> master
 
     return (
         <div className="min-h-screen bg-white">
@@ -416,85 +402,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                         </div>
                     </div>
 
-<<<<<<< HEAD
-                    {/* Month Navigation */}
-                    <div className="flex items-center justify-center mb-6 px-6">
-                        <button
-                            onClick={() => changeMonth('prev')}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <h2 className="text-xl font-semibold text-gray-900 mx-4">
-                            {thaiMonth} {buddhistYear}
-                        </h2>
-                        <button
-                            onClick={() => changeMonth('next')}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    {/* Calendar Grid */}
-                    <div className="grid grid-cols-7 gap-px px-6">
-                        {/* Days of Week Header */}
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                            <div key={day} className="p-3 text-center text-sm font-medium text-gray-600">
-                                {day}
-                            </div>
-                        ))}
-                        
-                        {/* Calendar Days */}
-                        {calendar.map((day, index) => {
-                            const dayOfWeek = index % 7; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-                            const isEvenDayOfWeek = dayOfWeek % 2 === 0;
-                            
-                            return (
-                                <div
-                                    key={index}
-                                    className={`p-3 text-center text-sm min-h-[60px] flex flex-col items-center justify-center ${
-                                        day
-                                            ? 'hover:opacity-80 cursor-pointer transition-all'
-                                            : 'bg-transparent'
-                                    }`}
-                                    style={{
-                                        backgroundColor: day ? (isEvenDayOfWeek ? '#B0E5F8' : '#E6F7FD') : 'transparent',
-                                        borderRadius: day ? '2px' : '0'
-                                    }}
-                                >
-                                    {day && (
-                                        <>
-                                            <span className="text-gray-900 font-medium">{day}</span>
-                                            {practiceDays.includes(day) && (
-                                                <div className="w-8 h-2 bg-blue-600 rounded-full mt-1"></div>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Legend */}
-                    <div className="mt-6 flex items-center justify-center gap-6 px-6 pb-6">
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 bg-blue-50 rounded"></div>
-                            <span className="text-sm text-gray-600">วันปกติ</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 bg-blue-50 rounded flex items-center justify-center">
-                                <div className="w-6 h-1 bg-blue-600 rounded-full"></div>
-                            </div>
-                            <span className="text-sm text-gray-600">วันที่มีกิจกรรม</span>
-                        </div>
-                    </div>
-            </main>
-=======
                     {viewMode === 'month' ? (
                         <>
                             {/* Month Navigation */}
@@ -722,8 +629,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                     )}
 
             </main>
-
->>>>>>> master
         </div>
     );
 };
