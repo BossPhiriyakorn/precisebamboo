@@ -1,88 +1,287 @@
-// services/apiService.ts
-// This file centralizes API call logic for the application.
+// API Service สำหรับการเชื่อมต่อกับ Database
+import { db, User, Booking, Factory, Article } from './database';
 
-import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+export class ApiService {
+  // User API
+  static async createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const user = db.createUser(userData);
+        resolve(user);
+      }, 100); // Simulate network delay
+    });
+  }
 
-/**
- * =================================================================
- * Gemini API Service
- * =================================================================
- * Interacts with the Google Gemini API.
- * The API key MUST be provided via the `process.env.API_KEY` environment variable.
- */
+  static async getUserById(id: string): Promise<User | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const user = db.getUserById(id);
+        resolve(user || null);
+      }, 100);
+    });
+  }
 
-// Initialize the Gemini client. The API key is handled by the environment.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  static async getUserByEmail(email: string): Promise<User | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const user = db.getUserByEmail(email);
+        resolve(user || null);
+      }, 100);
+    });
+  }
 
-/**
- * Generates text content using a specified model.
- * @param prompt The text prompt to send to the model.
- * @returns The generated text response.
- */
-export async function generateTextFromGemini(prompt: string): Promise<string> {
-    try {
-        const response: GenerateContentResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
-        });
-        
-        const text = response.text;
-        // The text property will be an empty string if there's no text content,
-        // so checking for truthiness is sufficient.
-        if (text) {
-            return text;
-        } else {
-             // Handle cases where the response might be blocked or empty
-             throw new Error('No text content received from Gemini API or response was empty.');
-        }
+  static async getUserByLineId(lineUserId: string): Promise<User | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const user = db.getUserByLineId(lineUserId);
+        resolve(user || null);
+      }, 100);
+    });
+  }
 
-    } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        // In a real application, you might want more sophisticated error handling,
-        // like showing a user-friendly message.
-        return "ขออภัย, เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI กรุณาลองใหม่อีกครั้ง";
-    }
+  static async updateUser(id: string, updates: Partial<User>): Promise<User | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const user = db.updateUser(id, updates);
+        resolve(user || null);
+      }, 100);
+    });
+  }
+
+  static async deleteUser(id: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const result = db.deleteUser(id);
+        resolve(result);
+      }, 100);
+    });
+  }
+
+  static async getAllUsers(): Promise<User[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const users = db.getAllUsers();
+        resolve(users);
+      }, 100);
+    });
+  }
+
+  static async getUsersByRole(role: 'farmer' | 'admin' | 'factory'): Promise<User[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const users = db.getUsersByRole(role);
+        resolve(users);
+      }, 100);
+    });
+  }
+
+  // Booking API
+  static async createBooking(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const booking = db.createBooking(bookingData);
+        resolve(booking);
+      }, 100);
+    });
+  }
+
+  static async getBookingById(id: string): Promise<Booking | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const booking = db.getBookingById(id);
+        resolve(booking || null);
+      }, 100);
+    });
+  }
+
+  static async getBookingsByFarmerId(farmerId: string): Promise<Booking[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const bookings = db.getBookingsByFarmerId(farmerId);
+        resolve(bookings);
+      }, 100);
+    });
+  }
+
+  static async getBookingsByFactoryId(factoryId: string): Promise<Booking[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const bookings = db.getBookingsByFactoryId(factoryId);
+        resolve(bookings);
+      }, 100);
+    });
+  }
+
+  static async updateBooking(id: string, updates: Partial<Booking>): Promise<Booking | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const booking = db.updateBooking(id, updates);
+        resolve(booking || null);
+      }, 100);
+    });
+  }
+
+  static async deleteBooking(id: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const result = db.deleteBooking(id);
+        resolve(result);
+      }, 100);
+    });
+  }
+
+  static async getAllBookings(): Promise<Booking[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const bookings = db.getAllBookings();
+        resolve(bookings);
+      }, 100);
+    });
+  }
+
+  // Factory API
+  static async createFactory(factoryData: Omit<Factory, 'id' | 'createdAt' | 'updatedAt'>): Promise<Factory> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factory = db.createFactory(factoryData);
+        resolve(factory);
+      }, 100);
+    });
+  }
+
+  static async getFactoryById(id: string): Promise<Factory | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factory = db.getFactoryById(id);
+        resolve(factory || null);
+      }, 100);
+    });
+  }
+
+  static async getAllFactories(): Promise<Factory[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factories = db.getAllFactories();
+        resolve(factories);
+      }, 100);
+    });
+  }
+
+  static async getActiveFactories(): Promise<Factory[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factories = db.getActiveFactories();
+        resolve(factories);
+      }, 100);
+    });
+  }
+
+  static async updateFactory(id: string, updates: Partial<Factory>): Promise<Factory | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factory = db.updateFactory(id, updates);
+        resolve(factory || null);
+      }, 100);
+    });
+  }
+
+  static async deleteFactory(id: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const result = db.deleteFactory(id);
+        resolve(result);
+      }, 100);
+    });
+  }
+
+  // Article API
+  static async createArticle(articleData: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): Promise<Article> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const article = db.createArticle(articleData);
+        resolve(article);
+      }, 100);
+    });
+  }
+
+  static async getArticleById(id: string): Promise<Article | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const article = db.getArticleById(id);
+        resolve(article || null);
+      }, 100);
+    });
+  }
+
+  static async getAllArticles(): Promise<Article[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const articles = db.getAllArticles();
+        resolve(articles);
+      }, 100);
+    });
+  }
+
+  static async getPublishedArticles(): Promise<Article[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const articles = db.getPublishedArticles();
+        resolve(articles);
+      }, 100);
+    });
+  }
+
+  static async getArticlesByCategory(category: string): Promise<Article[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const articles = db.getArticlesByCategory(category);
+        resolve(articles);
+      }, 100);
+    });
+  }
+
+  static async updateArticle(id: string, updates: Partial<Article>): Promise<Article | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const article = db.updateArticle(id, updates);
+        resolve(article || null);
+      }, 100);
+    });
+  }
+
+  static async deleteArticle(id: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const result = db.deleteArticle(id);
+        resolve(result);
+      }, 100);
+    });
+  }
+
+  // Utility API
+  static async getStats(): Promise<{
+    totalUsers: number;
+    totalBookings: number;
+    totalFactories: number;
+    totalArticles: number;
+    usersByRole: Record<string, number>;
+  }> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const stats = db.getStats();
+        resolve(stats);
+      }, 100);
+    });
+  }
+
+  static async clearAllData(): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        db.clearAllData();
+        resolve();
+      }, 100);
+    });
+  }
 }
 
-
-/**
- * =================================================================
- * Generic API Service (Example)
- * =================================================================
- * Example of how to structure calls to other APIs.
- * In a real-world scenario, you would read keys from a .env file on the server-side
- * or have them injected during the build process. Frontend code cannot directly read .env files.
- * The environment variable `process.env.ANOTHER_SERVICE_API_KEY` would be an example.
- */
-
-const ANOTHER_API_BASE_URL = 'https://api.anotherservice.com/v1';
-
-/**
- * Fetches data from a generic API endpoint.
- * @param endpoint The API endpoint to call (e.g., '/data').
- * @returns The JSON response from the API.
- */
-export async function fetchFromAnotherAPI(endpoint: string): Promise<any> {
-    // In a real application, you would get this key from the environment.
-    // NOTE: This is just a placeholder and will not work in this sandbox.
-    const apiKey = process.env.ANOTHER_SERVICE_API_KEY; 
-
-    try {
-        const response = await fetch(`${ANOTHER_API_BASE_URL}${endpoint}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`, // Example authorization header
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error(`Error fetching from another API (${endpoint}):`, error);
-        throw error; // Re-throw the error to be handled by the caller.
-    }
-}
+export default ApiService;

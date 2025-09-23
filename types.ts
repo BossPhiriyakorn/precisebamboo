@@ -26,6 +26,7 @@ export enum Page {
   CONTRACT = 'สัญญา',
   CHECK_STATUS = 'ตรวจสอบสถานะ',
   SHIPMENT_STATUS = 'สถานะขนส่ง',
+  PRACTICE_CALENDAR = 'ปฎิทินการปฎิบัตร',
 }
 
 // Enumสำหรับสถานะการจองคิว

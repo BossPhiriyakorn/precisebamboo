@@ -20,7 +20,7 @@
 1. **เตรียม Environment Variables:**
 ```bash
 # สร้างไฟล์ .env
-echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env
+echo "NODE_ENV=production" > .env
 ```
 
 2. **Build และ Deploy:**
@@ -129,7 +129,6 @@ eb deploy
 สร้างไฟล์ `.env` ใน root directory:
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
 NODE_ENV=production
 ```
 

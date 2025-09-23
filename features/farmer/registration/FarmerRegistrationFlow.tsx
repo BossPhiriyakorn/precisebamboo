@@ -32,7 +32,7 @@ const STEPS = [
     { id: 1, label: 'ข้อมูลส่วนตัว', icon: '/Vector (1).png' },
     { id: 2, label: 'ข้อมูลแปลงปลูก', icon: '/Vector (3).png' },
     { id: 3, label: 'เพิ่มเอกสาร', icon: '/Vector (2).png' },
-    { id: 4, label: 'ยืนยันและส่งเรื่อง', icon: '/icon-park-solid_list-success.png' },
+    { id: 4, label: 'ขั้นตอนสำเร็จ', icon: '/icon-park-solid_list-success.png' },
 ];
 const INITIAL_FORM_DATA: FormData = {
     personal: {
@@ -51,57 +51,19 @@ const INITIAL_FORM_DATA: FormData = {
 // Sub-components
 // =================================================================
 
-const SuccessView: React.FC<{ onGoToStatus: () => void; onGoToDashboard: () => void; }> = ({ onGoToStatus, onGoToDashboard }) => (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
-        <div className="flex-grow flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm w-full">
-                <p className="font-bold text-slate-700 mb-4">ลงทะเบียนเสร็จสิ้น</p>
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto border-4 border-green-500">
-                    <Icons.CheckIcon className="w-12 h-12 text-green-500" strokeWidth={3}/>
-                </div>
-                <h2 className="text-2xl font-bold text-slate-800 mt-6">ลงทะเบียนสำเร็จ</h2>
-                <p className="text-slate-600 mt-2 text-sm">
-                    เราได้รับข้อมูลการลงทะเบียนเข้าร่วมโครงการของท่านแล้ว ทีมงานจะแจ้งผลการอนุมัติให้ท่านทราบผ่านทาง Line OA หรืออีเมลที่ลงทะเบียนไว้
-                </p>
-                <div className="mt-8 space-y-3">
-                    <button
-                        onClick={onGoToDashboard}
-                        className="w-full bg-white hover:bg-slate-100 text-slate-800 font-bold py-3 rounded-lg transition-colors border-2 border-slate-300"
-                    >
-                        หน้าหลัก
-                    </button>
-                    <button
-                        onClick={onGoToStatus}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors"
-                    >
-                        ตรวจสอบสถานะ
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div className="relative w-full h-32 pointer-events-none">
-             <svg className="absolute bottom-0 w-full h-full" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                <path d="M-200 60 Q 160 0, 520 60 T 1240 60 T 1960 60" stroke="#007AB8" strokeOpacity="0.1" strokeWidth="2" />
-                <path d="M-200 70 Q 160 10, 520 70 T 1240 70 T 1960 70" stroke="#007AB8" strokeOpacity="0.1" strokeWidth="2" />
-                <path d="M-200 80 Q 160 20, 520 80 T 1240 80 T 1960 80" stroke="#007AB8" strokeOpacity="0.1" strokeWidth="2" />
-                <path d="M-150 55 Q 210 -15, 570 55 T 1290 55 T 2010 55" stroke="#007AB8" strokeOpacity="0.1" strokeWidth="1.5" />
-             </svg>
-        </div>
-    </div>
-);
 
 
-const StepperHeader: React.FC<{ currentStep: number }> = ({ currentStep }) => (
+const StepperHeader: React.FC<{ currentStep: number; isSubmitted?: boolean }> = ({ currentStep, isSubmitted = false }) => (
     <div className="flex items-center w-full px-4">
         {STEPS.map((step, index) => (
             <React.Fragment key={step.id}>
                 <div className="flex flex-col items-center text-center flex-1 space-y-1.5">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300
-                        ${currentStep > step.id ? 'bg-white border-white' :
+                        ${currentStep > step.id || (isSubmitted && step.id === 4) ? 'bg-white border-white' :
                         currentStep === step.id ? 'bg-transparent border-white' :
                         'bg-transparent border-white/50'
                     }`}>
-                        {currentStep > step.id ? (
+                        {currentStep > step.id || (isSubmitted && step.id === 4) ? (
                             <Icons.CheckIcon className="w-7 h-7 text-green-500" />
                         ) : (
                             <img 
@@ -111,13 +73,13 @@ const StepperHeader: React.FC<{ currentStep: number }> = ({ currentStep }) => (
                             />
                         )}
                     </div>
-                    <p className={`text-xs font-semibold transition-colors text-center leading-tight whitespace-nowrap ${currentStep >= step.id ? 'text-white' : 'text-white/50'}`} style={{ fontSize: '10px' }}>
+                    <p className={`text-xs font-semibold transition-colors text-center leading-tight whitespace-nowrap ${currentStep >= step.id || (isSubmitted && step.id === 4) ? 'text-white' : 'text-white/50'}`} style={{ fontSize: '10px' }}>
                         {step.label}
                     </p>
                 </div>
                 {index < STEPS.length - 1 && (
                     <div className={`h-0.5 transition-colors duration-300 ${
-                        currentStep >= step.id + 1 ? 'bg-white' : 'bg-white/50'
+                        currentStep >= step.id + 1 || (isSubmitted && step.id === 4) ? 'bg-white' : 'bg-white/50'
                     }`} style={{ 
                         width: '37px',
                         marginLeft: '-18.5px',
@@ -171,9 +133,37 @@ const SearchableSelectField: React.FC<{ label: string; options: { value: string;
     </div>
 );
 
+// Helper function to check file type and extract URL
+const getFileInfo = (preview: string): { url: string; type: 'image' | 'pdf'; filename?: string } => {
+    // Check if it contains file type info (format: "url|type|filename")
+    if (preview.includes('|')) {
+        const parts = preview.split('|');
+        const [url, type, filename] = parts;
+        
+        // Check if it's PDF by file type or filename
+        const isPdf = type === 'application/pdf' || 
+                     type.includes('pdf') || 
+                     filename?.toLowerCase().endsWith('.pdf');
+        
+        return {
+            url,
+            type: isPdf ? 'pdf' : 'image',
+            filename: filename || 'Unknown file'
+        };
+    }
+    
+    // Fallback for old format
+    if (preview.startsWith('data:application/pdf')) {
+        return { url: preview, type: 'pdf', filename: 'PDF Document' };
+    }
+    
+    return { url: preview, type: 'image', filename: 'Image File' };
+};
+
 const FileUploadCard: React.FC<{ title: string; description: string; preview: string | null; onChange: (e: ChangeEvent<HTMLInputElement>) => void; onRemove: () => void; }> = 
 ({ title, description, preview, onChange, onRemove }) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [pdfLoadError, setPdfLoadError] = useState(false);
     return (
         <div className="bg-white rounded-xl shadow-md p-6 text-center">
             <h3 className="text-xl font-bold text-slate-800">{title}</h3>
@@ -181,10 +171,90 @@ const FileUploadCard: React.FC<{ title: string; description: string; preview: st
             <div className="w-full h-15 rounded-lg flex items-start justify-center relative pt-2.5">
                 {preview ? (
                     <>
-                        <img src={preview} alt="Preview" className="w-full h-full object-contain rounded-lg p-2" />
-                        <button type="button" onClick={onRemove} className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 shadow">
-                            <Icons.XMarkIcon className="w-4 h-4" />
-                        </button>
+                        {(() => {
+                            const fileInfo = getFileInfo(preview);
+                            return fileInfo.type === 'image' ? (
+                                <img src={fileInfo.url} alt="Preview" className="w-full h-full object-contain rounded-lg p-2" />
+                            ) : (
+                                <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-gray-200 overflow-hidden">
+                                    {/* PDF Preview Header */}
+                                    <div className="bg-red-600 text-white p-3 flex items-center justify-between rounded-t-lg">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-sm font-bold">PDF #1</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-xs bg-red-700 px-3 py-1.5 rounded-full font-medium" title={fileInfo.filename}>
+                                                {fileInfo.filename?.split('.')[0]?.substring(0, 8) || 'PDF'}
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                onClick={onRemove} 
+                                                className="w-6 h-6 bg-red-700 hover:bg-red-800 rounded-full flex items-center justify-center transition-colors"
+                                            >
+                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* PDF Content Preview - แสดง PDF จริง */}
+                                    <div className="bg-white p-4 rounded-b-lg" style={{ minHeight: '250px' }}>
+                                        {!pdfLoadError ? (
+                                            <div className="w-full h-full border border-gray-200 rounded-lg overflow-hidden">
+                                                <iframe 
+                                                    src={fileInfo.url} 
+                                                    type="application/pdf"
+                                                    className="w-full h-full border-0"
+                                                    style={{ minHeight: '200px' }}
+                                                    title={`PDF Preview - ${fileInfo.filename}`}
+                                                    onError={() => setPdfLoadError(true)}
+                                                    onLoad={() => setPdfLoadError(false)}
+                                                >
+                                                </iframe>
+                                            </div>
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center p-6" style={{ minHeight: '200px' }}>
+                                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                                    <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                <h4 className="text-lg font-semibold text-gray-700 mb-2">ไม่สามารถแสดง PDF ได้</h4>
+                                                <p className="text-sm text-gray-500 mb-4 text-center">กรุณาใช้ตัวเลือกด้านล่างเพื่อดูไฟล์</p>
+                                                <div className="flex gap-3">
+                                                    <a 
+                                                        href={fileInfo.url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                        </svg>
+                                                        เปิดไฟล์ PDF
+                                                    </a>
+                                                    <button 
+                                                        onClick={() => window.open(fileInfo.url, '_blank')}
+                                                        className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                        </svg>
+                                                        ดาวน์โหลด
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </>
                 ) : (
                     <button type="button" onClick={() => inputRef.current?.click()} className="bg-white border border-[#8CC63F] text-[#8CC63F] hover:bg-green-50 font-bold text-sm py-2.5 px-4 transition-colors flex items-center justify-center gap-2" style={{ borderRadius: '5px' }}>
@@ -206,6 +276,12 @@ const MultiFileUploadCard: React.FC<{
     onRemoveFile: (index: number) => void; 
 }> = ({ title, description, previews, onAddFile, onRemoveFile }) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [pdfLoadErrors, setPdfLoadErrors] = useState<boolean[]>([]);
+
+    // Reset PDF load errors when previews change
+    useEffect(() => {
+        setPdfLoadErrors(new Array(previews.length).fill(false));
+    }, [previews.length]);
 
     return (
         <div className="bg-white rounded-xl shadow-md p-6 text-center">
@@ -223,10 +299,98 @@ const MultiFileUploadCard: React.FC<{
                 <div className="space-y-4">
                     {previews.map((preview, index) => (
                         <div key={index} className="relative w-full h-15 bg-gray-100 rounded-lg border-2 border-gray-200">
-                            <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-full object-contain rounded-lg p-2" />
-                            <button type="button" onClick={() => onRemoveFile(index)} className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 shadow">
-                                <Icons.XMarkIcon className="w-4 h-4" />
-                            </button>
+                            {(() => {
+                                const fileInfo = getFileInfo(preview);
+                                return fileInfo.type === 'image' ? (
+                                    <img src={fileInfo.url} alt={`Preview ${index + 1}`} className="w-full h-full object-contain rounded-lg p-2" />
+                                ) : (
+                                    <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-gray-200 overflow-hidden">
+                                        {/* PDF Preview Header */}
+                                        <div className="bg-red-600 text-white p-3 flex items-center justify-between rounded-t-lg">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-5 h-5 bg-white/20 rounded flex items-center justify-center">
+                                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                <span className="text-sm font-bold">PDF #{index + 1}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-xs bg-red-700 px-2 py-1 rounded-full font-medium" title={fileInfo.filename}>
+                                                    {fileInfo.filename?.split('.')[0]?.substring(0, 6) || 'PDF'}
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => onRemoveFile(index)} 
+                                                    className="w-5 h-5 bg-red-700 hover:bg-red-800 rounded-full flex items-center justify-center transition-colors"
+                                                >
+                                                    <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* PDF Content Preview - แสดง PDF จริง */}
+                                        <div className="bg-white p-3 rounded-b-lg" style={{ minHeight: '180px' }}>
+                                            {!pdfLoadErrors[index] ? (
+                                                <div className="w-full h-full border border-gray-200 rounded-lg overflow-hidden">
+                                                    <iframe 
+                                                        src={fileInfo.url} 
+                                                        type="application/pdf"
+                                                        className="w-full h-full border-0"
+                                                        style={{ minHeight: '150px' }}
+                                                        title={`PDF Preview - ${fileInfo.filename}`}
+                                                        onError={() => {
+                                                            const newErrors = [...pdfLoadErrors];
+                                                            newErrors[index] = true;
+                                                            setPdfLoadErrors(newErrors);
+                                                        }}
+                                                        onLoad={() => {
+                                                            const newErrors = [...pdfLoadErrors];
+                                                            newErrors[index] = false;
+                                                            setPdfLoadErrors(newErrors);
+                                                        }}
+                                                    >
+                                                    </iframe>
+                                                </div>
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center p-4" style={{ minHeight: '150px' }}>
+                                                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3">
+                                                        <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <h5 className="text-sm font-semibold text-gray-700 mb-1">ไม่สามารถแสดง PDF ได้</h5>
+                                                    <p className="text-xs text-gray-500 mb-3 text-center">กรุณาใช้ตัวเลือกด้านล่างเพื่อดูไฟล์</p>
+                                                    <div className="flex gap-2">
+                                                        <a 
+                                                            href={fileInfo.url} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1"
+                                                        >
+                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                            </svg>
+                                                            เปิดไฟล์
+                                                        </a>
+                                                        <button 
+                                                            onClick={() => window.open(fileInfo.url, '_blank')}
+                                                            className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 transition-colors flex items-center gap-1"
+                                                        >
+                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                            </svg>
+                                                            ดาวน์โหลด
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     ))}
                     <div className="flex justify-center">
@@ -324,6 +488,24 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [modalState, setModalState] = useState<'none' | 'success' | 'cancelConfirm'>('none');
 
+    // Cleanup URL objects on unmount
+    useEffect(() => {
+        return () => {
+            // Cleanup idCard URL
+            if (previews.idCard && previews.idCard.includes('blob:')) {
+                const url = previews.idCard.split('|')[0];
+                URL.revokeObjectURL(url);
+            }
+            // Cleanup landDeed URLs
+            previews.landDeed.forEach(preview => {
+                if (preview && preview.includes('blob:')) {
+                    const url = preview.split('|')[0];
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, [previews]);
+
     // Form change handler
     const handleChange = (form: 'personal' | 'plot', e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -347,9 +529,11 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
         const file = e.target.files?.[0];
         if (file) {
             setFiles(prev => ({...prev, [type]: file}));
-            const reader = new FileReader();
-            reader.onloadend = () => setPreviews(prev => ({...prev, [type]: reader.result as string}));
-            reader.readAsDataURL(file);
+            // Use URL.createObjectURL for better PDF preview support
+            const fileUrl = URL.createObjectURL(file);
+            // Store file type info and filename for better detection
+            const fileInfo = `${fileUrl}|${file.type}|${file.name}`;
+            setPreviews(prev => ({...prev, [type]: fileInfo}));
         }
     };
 
@@ -357,9 +541,11 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
         const file = e.target.files?.[0];
         if (file) {
             setFiles(prev => ({...prev, landDeed: [...prev.landDeed, file]}));
-            const reader = new FileReader();
-            reader.onloadend = () => setPreviews(prev => ({...prev, landDeed: [...prev.landDeed, reader.result as string]}));
-            reader.readAsDataURL(file);
+            // Use URL.createObjectURL for better PDF preview support
+            const fileUrl = URL.createObjectURL(file);
+            // Store file type info and filename for better detection
+            const fileInfo = `${fileUrl}|${file.type}|${file.name}`;
+            setPreviews(prev => ({...prev, landDeed: [...prev.landDeed, fileInfo]}));
         }
         if (e.target) {
             e.target.value = '';
@@ -393,11 +579,7 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
     
     const handleFinalSubmit = () => {
-        if (isEditMode) {
-            setModalState('success');
-        } else {
-            setIsSubmitted(true);
-        }
+        setIsSubmitted(true);
     };
 
     const renderStepContent = () => {
@@ -477,51 +659,87 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
                 );
             case 4:
                 return (
-                    <div className="space-y-6 text-sm text-slate-800">
-                        <div className="bg-white rounded-xl shadow-md p-6">
-                            <h3 className="text-xl font-bold text-slate-800 text-center mb-4">ตรวจสอบข้อมูล</h3>
-                            <div className="space-y-4">
-                                <div>
-                                    <h4 className="font-bold text-lg mb-2 border-b pb-1">ข้อมูลส่วนตัว</h4>
-                                    <SummaryItem label="ชื่อ-สกุล" value={`${formData.personal.title} ${formData.personal.firstName} ${formData.personal.lastName}`} />
-                                    <SummaryItem label="เบอร์โทร" value={formData.personal.phone} />
-                                    <SummaryItem label="ที่อยู่" value={`${formData.personal.houseNumber} หมู่ ${formData.personal.moo || '-'} ${formData.personal.street || ''} ต.${formData.personal.subdistrict} อ.${formData.personal.district} จ.${formData.personal.province} ${formData.personal.postalCode}`} />
-                                </div>
-                                 <div>
-                                    <h4 className="font-bold text-lg mb-2 border-b pb-1">ข้อมูลแปลงปลูก</h4>
-                                    <SummaryItem label="ขนาด" value={`${formData.plot.areaSize} ${formData.plot.areaUnit}`} />
-                                    <SummaryItem label="พืชเดิม" value={formData.plot.prevCrops} />
-                                    <SummaryItem label="ที่อยู่แปลง" value={`${formData.plot.houseNumber} หมู่ ${formData.plot.moo || '-'} ต.${formData.plot.subdistrict} อ.${formData.plot.district} จ.${formData.plot.province} ${formData.plot.postalCode}`} />
-                                </div>
-                                 <div>
-                                    <h4 className="font-bold text-lg mb-2 border-b pb-1">เอกสาร</h4>
-                                    <SummaryItem label="สำเนาบัตรประชาชน" value={<span className="flex items-center gap-2">{files.idCard ? <><Icons.CheckIcon className="w-5 h-5 text-green-500"/> {files.idCard.name}</> : 'ยังไม่อัปโหลด'}</span>} />
-                                    <SummaryItem 
-                                        label="โฉนดที่ดิน" 
-                                        value={
-                                            files.landDeed.length > 0 ? (
-                                                <ul className="list-disc list-inside space-y-1">
-                                                    {files.landDeed.map((file, index) => (
-                                                        <li key={index} className="flex items-center gap-2">
-                                                            <Icons.CheckIcon className="w-5 h-5 text-green-500"/> <span>{file.name}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : 'ยังไม่อัปโหลด'
-                                        } 
-                                    />
+                    <div className="space-y-6">
+                        {!isSubmitted ? (
+                            // หน้าตรวจสอบข้อมูล
+                            <div className="text-sm text-slate-800">
+                                <div className="bg-white rounded-xl shadow-md p-6">
+                                    <h3 className="text-xl font-bold text-slate-800 text-center mb-4">ตรวจสอบข้อมูล</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <h4 className="font-bold text-lg mb-2 border-b pb-1">ข้อมูลส่วนตัว</h4>
+                                            <SummaryItem label="ชื่อ-สกุล" value={`${formData.personal.title} ${formData.personal.firstName} ${formData.personal.lastName}`} />
+                                            <SummaryItem label="เบอร์โทร" value={formData.personal.phone} />
+                                            <SummaryItem label="ที่อยู่" value={`${formData.personal.houseNumber} หมู่ ${formData.personal.moo || '-'} ${formData.personal.street || ''} ต.${formData.personal.subdistrict} อ.${formData.personal.district} จ.${formData.personal.province} ${formData.personal.postalCode}`} />
+                                        </div>
+                                         <div>
+                                            <h4 className="font-bold text-lg mb-2 border-b pb-1">ข้อมูลแปลงปลูก</h4>
+                                            <SummaryItem label="ขนาด" value={`${formData.plot.areaSize} ${formData.plot.areaUnit}`} />
+                                            <SummaryItem label="พืชเดิม" value={formData.plot.prevCrops} />
+                                            <SummaryItem label="ที่อยู่แปลง" value={`${formData.plot.houseNumber} หมู่ ${formData.plot.moo || '-'} ต.${formData.plot.subdistrict} อ.${formData.plot.district} จ.${formData.plot.province} ${formData.plot.postalCode}`} />
+                                        </div>
+                                         <div>
+                                            <h4 className="font-bold text-lg mb-2 border-b pb-1">เอกสาร</h4>
+                                            <SummaryItem label="สำเนาบัตรประชาชน" value={<span className="flex items-center gap-2">{files.idCard ? <><Icons.CheckIcon className="w-5 h-5 text-green-500"/> {files.idCard.name}</> : 'ยังไม่อัปโหลด'}</span>} />
+                                            <SummaryItem 
+                                                label="โฉนดที่ดิน" 
+                                                value={
+                                                    files.landDeed.length > 0 ? (
+                                                        <ul className="list-disc list-inside space-y-1">
+                                                            {files.landDeed.map((file, index) => (
+                                                                <li key={index} className="flex items-center gap-2">
+                                                                    <Icons.CheckIcon className="w-5 h-5 text-green-500"/> <span>{file.name}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : 'ยังไม่อัปโหลด'
+                                                } 
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            // หน้าลงทะเบียนเสร็จสิ้น
+                            <div className="space-y-4">
+                                <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm w-full mx-auto">
+                                    <p className="font-bold text-slate-700 mb-4">ลงทะเบียนเสร็จสิ้น</p>
+                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto border-4 border-green-500">
+                                        <Icons.CheckIcon className="w-12 h-12 text-green-500" strokeWidth={3}/>
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-slate-800 mt-6">ลงทะเบียนสำเร็จ</h2>
+                                    <p className="text-slate-600 mt-2 text-sm">
+                                        เราได้รับข้อมูลการลงทะเบียนเข้าร่วมโครงการของท่านแล้ว ทีมงานจะแจ้งผลการอนุมัติให้ท่านทราบผ่านทาง Line OA หรืออีเมลที่ลงทะเบียนไว้
+                                    </p>
+                                </div>
+                                
+                                {/* ปุ่มที่ติดกับเฟรม */}
+                                <div className="max-w-sm w-full mx-auto px-4">
+                                    <div className="flex space-x-3">
+                                        <button
+                                            onClick={onBackToDashboard}
+                                            className="flex-1 bg-transparent hover:bg-green-50 text-[#54B948] font-bold py-3 transition-colors border-2 border-[#54B948] flex items-center justify-center gap-2"
+                                            style={{ borderRadius: '5px' }}
+                                        >
+                                            <img src="/Vector (2.1).png" alt="Home" className="w-5 h-5" />
+                                            หน้าหลัก
+                                        </button>
+                                        <button
+                                            onClick={onSubmitSuccess}
+                                            className="flex-1 bg-[#54B948] hover:bg-[#4A9E3F] text-white font-bold py-3 transition-colors"
+                                            style={{ borderRadius: '5px' }}
+                                        >
+                                            ตรวจสอบสถานะ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             default: return null;
         }
     };
-    
-    if (isSubmitted) {
-        return <SuccessView onGoToStatus={onSubmitSuccess} onGoToDashboard={onBackToDashboard} />;
-    }
 
     return (
         <div 
@@ -548,7 +766,7 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
                         </button>
                         <h1 className="text-2xl font-bold">เพิ่มข้อมูลส่วนตัว</h1>
                     </div>
-                    <StepperHeader currentStep={step} />
+                    <StepperHeader currentStep={step} isSubmitted={isSubmitted} />
                 </div>
             </header>
             
@@ -560,7 +778,8 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
             </main>
             
             {/* Footer */}
-            <footer className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-sm border-t border-gray-200">
+            {!isSubmitted && (
+                <footer className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-sm border-t border-gray-200">
                 <div className="max-w-xl mx-auto">
                     {isEditMode && step === 4 ? (
                         <div className="flex items-center gap-4">
@@ -596,35 +815,39 @@ const FarmerRegistrationFlow: React.FC<FarmerRegistrationFlowProps> = ({ onBackT
                             </button>
                         </div>
                     ) : (
-                        <button
-                            onClick={step === 4 ? handleFinalSubmit : nextStep}
-                            disabled={!isStepValid}
-                            className="w-full text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed shadow-lg"
-                            style={{ 
-                                backgroundColor: isStepValid ? '#53B847' : '#9CA3AF',
-                                '--hover-color': '#4A9E3A'
-                            } as React.CSSProperties & { '--hover-color': string }}
-                            onMouseEnter={(e) => {
-                                if (isStepValid) {
-                                    e.currentTarget.style.backgroundColor = '#4A9E3A';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (isStepValid) {
-                                    e.currentTarget.style.backgroundColor = '#53B847';
-                                }
-                            }}
-                        >
-                            {step === 3 ? 'ยืนยันการส่งเอกสาร' : step === 4 ? 'ยืนยันส่งเอกสาร' : 'ถัดไป'}
-                        </button>
+                        !isSubmitted && (
+                            <button
+                                onClick={step === 4 ? handleFinalSubmit : nextStep}
+                                disabled={!isStepValid}
+                                className="w-full text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed shadow-lg"
+                                style={{ 
+                                    backgroundColor: isStepValid ? '#53B847' : '#9CA3AF',
+                                    '--hover-color': '#4A9E3A'
+                                } as React.CSSProperties & { '--hover-color': string }}
+                                onMouseEnter={(e) => {
+                                    if (isStepValid) {
+                                        e.currentTarget.style.backgroundColor = '#4A9E3A';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (isStepValid) {
+                                        e.currentTarget.style.backgroundColor = '#53B847';
+                                    }
+                                }}
+                            >
+                                {step === 3 ? 'ยืนยันการส่งเอกสาร' : step === 4 ? 'ยืนยันส่งเอกสาร' : 'ถัดไป'}
+                            </button>
+                        )
                     )}
                 </div>
-            </footer>
-            {modalState !== 'none' && (
+                </footer>
+            )}
+            
+            {modalState !== 'none' && modalState !== 'success' && (
                 <ActionModal
-                    type={modalState as 'success' | 'cancelConfirm'}
+                    type={modalState as 'cancelConfirm'}
                     onClose={() => setModalState('none')}
-                    onConfirm={modalState === 'success' ? onSubmitSuccess : onBackToDashboard}
+                    onConfirm={onBackToDashboard}
                 />
             )}
         </div>

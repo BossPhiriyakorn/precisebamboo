@@ -2,7 +2,7 @@
 // คอมโพเนนต์หลักสำหรับมุมมองของเกษตรกร (Farmer)
 // ทำหน้าที่เป็น Layout หลักและจัดการ State ที่ใช้ร่วมกันระหว่างหน้าย่อยต่างๆ ของเกษตรกร
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 // FIX: Import FarmerBooking to use as a specific type for new bookings.
 import { Page, UserRole, Booking, BookingStatus, Profile, FarmerBooking } from '../../types';
 import * as mockData from '../../data/mockData';
@@ -20,6 +20,9 @@ import CheckStatusPage from './CheckStatusPage';
 import FarmerRegistrationFlow from './registration/FarmerRegistrationFlow';
 import ContractPage from './ContractPage';
 import ShipmentStatusPage from './ShipmentStatusPage';
+import PracticeCalendarPage from './PracticeCalendarPage';
+import { useApp } from '../../contexts/AppContext';
+import { useMockData } from '../../utils/environment';
 
 
 // Props ที่คอมโพเนนต์นี้ต้องการ
@@ -28,17 +31,53 @@ interface FarmerViewProps {
 }
 
 const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
+    const { state, loadUserData } = useApp();
+    
     // =================================================================
     // State Management
     // =================================================================
     const [activePage, setActivePage] = useState<Page>(Page.DASHBOARD); // State สำหรับหน้าที่กำลังแสดงผล
     const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null); // ID ของบทความที่เลือก (สำหรับหน้าคลังความรู้)
-    const [bookings, setBookings] = useState<Booking[]>(mockData.farmerBookings); // State สำหรับรายการจองคิว
-    const [profile, setProfile] = useState<Profile>(mockData.farmerProfile); // State ข้อมูลโปรไฟล์
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isNotificationOpen, setNotificationOpen] = useState(false);
     const [currentView, setCurrentView] = useState<'main' | 'registration'>('main');
     const [isEditMode, setIsEditMode] = useState(false);
+
+    // Load user data when component mounts
+    useEffect(() => {
+        if (state.currentUser) {
+            loadUserData(state.currentUser.id);
+        }
+    }, [state.currentUser, loadUserData]);
+
+    // ใช้ข้อมูลจาก Context หรือ mock data ตาม mode
+    const bookings = state.bookings.length > 0 ? state.bookings : (useMockData ? mockData.farmerBookings : []);
+    const profile: Profile = state.currentUser ? {
+        id: state.currentUser.id,
+        firstName: state.currentUser.profile.firstName,
+        lastName: state.currentUser.profile.lastName,
+        phone: state.currentUser.profile.phone,
+        address: state.currentUser.profile.address,
+        province: state.currentUser.profile.province,
+        district: state.currentUser.profile.district,
+        subDistrict: state.currentUser.profile.subDistrict,
+        postalCode: state.currentUser.profile.postalCode,
+        lineUserId: state.currentUser.profile.lineUserId,
+        lineDisplayName: state.currentUser.profile.lineDisplayName,
+        linePictureUrl: state.currentUser.profile.linePictureUrl,
+        isRegistered: state.currentUser.isRegistered
+    } : (useMockData ? mockData.farmerProfile : {
+        id: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        address: '',
+        province: '',
+        district: '',
+        subDistrict: '',
+        postalCode: '',
+        isRegistered: false
+    });
 
 
     // =================================================================
@@ -171,6 +210,11 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
                     onMenuClick={() => setIsSidebarOpen(true)}
                     onNotificationClick={() => setNotificationOpen(true)}
                 />;
+            case Page.PRACTICE_CALENDAR:
+                return <PracticeCalendarPage 
+                    onMenuClick={() => setIsSidebarOpen(true)}
+                    onNotificationClick={() => setNotificationOpen(true)}
+                />;
             default: 
                 return <FarmerDashboard onMenuClick={() => setIsSidebarOpen(true)} onNotificationClick={() => setNotificationOpen(true)} onNavigate={handleNavClick} onStartRegistration={handleStartRegistration} />;
         }
@@ -183,6 +227,7 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
     const isContractPage = activePage === Page.CONTRACT;
     const isBookingPage = activePage === Page.BOOKING;
     const isShipmentStatusPage = activePage === Page.SHIPMENT_STATUS;
+    const isPracticeCalendarPage = activePage === Page.PRACTICE_CALENDAR;
 
     // The main content is now rendered conditionally inside the main layout
     const mainContent = renderPageContent();
@@ -219,7 +264,7 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
                         onNotificationClick={() => setNotificationOpen(true)}
                         onBackClick={isKnowledgePage ? () => handleNavClick(Page.DASHBOARD) : undefined}
                     />
-                    <main className="container mx-auto p-4 sm:p-6 lg:p-8 -mt-16 relative z-10">
+                    <main className="container mx-auto -mt-16 relative z-10">
                         {mainContent}
                     </main>
                 </div>

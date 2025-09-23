@@ -11,6 +11,9 @@ import LoginWithLinePage from './features/auth/LoginWithLinePage';
 import { initialPolicyContent, initialTermsContent } from './data/policyContent';
 import RoleSelector from './features/auth/RoleSelector';
 import Login from './features/auth/Login';
+import { parseUrlParams } from './utils/navigation';
+import { handleLineCallback } from './utils/lineCallback';
+import { AppProvider } from './contexts/AppContext';
 
 // Simulating a loading spinner
 const LoadingSpinner = () => (
@@ -19,7 +22,7 @@ const LoadingSpinner = () => (
     </div>
 );
 
-function App() {
+function AppContent() {
   const [role, setRole] = useState<UserRole | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>('loading');
   const [registrationStatus, setRegistrationStatus] = useState<RegistrationStatus | null>(null);
@@ -38,19 +41,55 @@ function App() {
   // Simulate checking authentication status
   useEffect(() => {
     setTimeout(() => {
-      // Check for LINE login callback
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('code')) {
-        // Simulate fetching profile after LINE login
-        setLineProfile({
-          userId: 'U1234567890abcdef1234567890ab',
-          displayName: 'สมชาย รักการเกษตร',
-          pictureUrl: 'https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg'
-        });
-        setRegistrationStatus('registering');
-        setAuthStatus('unauthenticated');
-      } else {
-        setAuthStatus('unauthenticated'); // Default to role selection
+        // Check for LINE login callback (เฉพาะเกษตรกรเท่านั้น)
+        const lineCallback = handleLineCallback();
+        if (lineCallback.success && lineCallback.role === UserRole.FARMER) {
+          // ตั้งค่า profile จาก LINE
+          setLineProfile(lineCallback.profile);
+          
+          // สำหรับเกษตรกร ตรวจสอบการลงทะเบียน
+          const isRegistered = localStorage.getItem('bamboo_farmer_registered') === 'true';
+          if (!isRegistered) {
+            setRegistrationStatus('registering');
+          } else {
+            setRole(UserRole.FARMER);
+            setAuthStatus('authenticated');
+          }
+        } else if (lineCallback.success && lineCallback.role) {
+          // ถ้า LINE callback สำเร็จแต่ไม่ใช่เกษตรกร ให้ไปหน้า login
+          setShowLogin(lineCallback.role);
+        } else {
+        // Check for role navigation parameters
+        const navParams = parseUrlParams();
+        if (navParams.role && navParams.action) {
+          if (navParams.action === 'register') {
+            setRegistrationStatus('registering');
+          } else if (navParams.action === 'login' && navParams.role !== UserRole.FARMER) {
+            setShowLogin(navParams.role);
+          } else if (navParams.action === 'direct') {
+            // สำหรับโรงงานเท่านั้น (แอดมินต้อง login ก่อน)
+            if (navParams.role === UserRole.FACTORY) {
+              setRole(navParams.role);
+              setAuthStatus('authenticated');
+            } else {
+              // แอดมินต้องไปหน้า login
+              setShowLogin(navParams.role);
+            }
+          } else if (navParams.role === UserRole.FARMER) {
+            // สำหรับเกษตรกร ตรวจสอบการลงทะเบียน
+            const isRegistered = localStorage.getItem('bamboo_farmer_registered') === 'true';
+            if (!isRegistered) {
+              // ถ้ายังไม่ลงทะเบียน ให้ไปหน้าสมัคร
+              setRegistrationStatus('registering');
+            } else {
+              // ถ้าลงทะเบียนแล้ว ให้ไปหน้าแรก
+              setRole(UserRole.FARMER);
+              setAuthStatus('authenticated');
+            }
+          }
+        } else {
+          setAuthStatus('unauthenticated'); // Default to role selection
+        }
       }
     }, 1000); // 1 second loading simulation
   }, []);
@@ -67,9 +106,16 @@ function App() {
 
   const handleSelectRole = (selectedRole: UserRole) => {
     if (selectedRole === UserRole.FARMER) {
-      // For testing, farmer role goes directly to farmer view
-      setRole(UserRole.FARMER);
-      setAuthStatus('authenticated');
+      // ตรวจสอบการลงทะเบียนของเกษตรกร
+      const isRegistered = localStorage.getItem('bamboo_farmer_registered') === 'true';
+      if (!isRegistered) {
+        // ถ้ายังไม่ลงทะเบียน ให้ไปหน้าสมัคร
+        setRegistrationStatus('registering');
+      } else {
+        // ถ้าลงทะเบียนแล้ว ให้ไปหน้าแรก
+        setRole(UserRole.FARMER);
+        setAuthStatus('authenticated');
+      }
     } else {
       // Admin and Factory go to a login page
       setShowLogin(selectedRole);
@@ -83,6 +129,7 @@ function App() {
 
   const handleSubmitRegistration = () => {
     // หลังจากสมัครสมาชิกสำเร็จ ให้ไปที่ FarmerDashboard
+    localStorage.setItem('bamboo_farmer_registered', 'true'); // บันทึกสถานะการลงทะเบียน
     setRole(UserRole.FARMER);
     setAuthStatus('authenticated');
     setRegistrationStatus(null);
@@ -134,11 +181,19 @@ function App() {
   // Default unauthenticated view is the role selector
   // We can add logic here to show LoginWithLinePage first if needed
   // For now, RoleSelector is the main entry.
-  return <RoleSelector 
-            onSelectRole={handleSelectRole} 
-            onStartRegistration={() => setRegistrationStatus('registering')} 
-            onTestNotApproved={() => setRegistrationStatus('not_approved')}
-          />;
+  return <RoleSelector
+                   onSelectRole={handleSelectRole}
+                   onStartRegistration={() => setRegistrationStatus('registering')}
+                   onTestNotApproved={() => setRegistrationStatus('not_approved')}
+                 />;
+}
+
+function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
+  );
 }
 
 export default App;

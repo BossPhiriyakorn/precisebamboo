@@ -2,8 +2,9 @@
 // คอมโพเนนต์สำหรับหน้าจอเลือกบทบาท (Role) ของผู้ใช้
 // เป็นหน้าแรกที่ผู้ใช้จะเห็นก่อนเข้าสู่ระบบ
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UserRole } from '../../types';
+import { parseUrlParams } from '../../utils/navigation';
 
 // Props ที่คอมโพเนนต์นี้ต้องการ
 interface RoleSelectorProps {
@@ -43,7 +44,21 @@ const MenuButton: React.FC<{
   </button>
 );
 
-const RoleSelector: React.FC<RoleSelectorProps> = ({ onSelectRole, onStartRegistration, onTestNotApproved }) => (
+const RoleSelector: React.FC<RoleSelectorProps> = ({ onSelectRole, onStartRegistration, onTestNotApproved }) => {
+  // ตรวจสอบ URL parameters เมื่อ component mount
+  useEffect(() => {
+    const urlParams = parseUrlParams();
+    
+    if (urlParams.role && urlParams.action) {
+      if (urlParams.action === 'register') {
+        onStartRegistration();
+      } else if (urlParams.action === 'login' || urlParams.action === 'direct') {
+        onSelectRole(urlParams.role);
+      }
+    }
+  }, [onSelectRole, onStartRegistration]);
+
+  return (
     <div className="min-h-screen bg-[#4C93FF] relative overflow-hidden">
       {/* Header Image */}
       <div className="absolute top-0 left-0 right-0 z-40">
@@ -119,6 +134,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ onSelectRole, onStartRegist
         </div>
       </div>
     </div>
-);
+  );
+};
 
 export default RoleSelector;

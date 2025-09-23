@@ -1,16 +1,17 @@
 // features/farmer/FarmerProfilePage.tsx
 // คอมโพเนนต์สำหรับหน้าโปรไฟล์ของเกษตรกร (ดีไซน์ใหม่)
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Profile, PromoterInfo, FarmerStatus, Page } from '../../types';
 import * as Icons from '../../constants';
 import ProfileEditModal from './ProfileEditModal';
 import FarmerHeader from './FarmerHeader';
+import { useApp } from '../../contexts/AppContext';
+import * as mockData from '../../data/mockData';
+import { useMockData } from '../../utils/environment';
 
 // Props ที่คอมโพเนนต์นี้ต้องการ
 interface FarmerProfilePageProps {
-    profile: Profile;
-    onUpdateProfile: (updatedProfile: Profile) => void;
     onMenuClick: () => void;
     onNotificationClick: () => void;
 }
@@ -50,13 +51,59 @@ const InfoItem: React.FC<{
 );
 
 
-const FarmerProfilePage: React.FC<FarmerProfilePageProps> = ({ profile, onUpdateProfile, onMenuClick, onNotificationClick }) => {
+const FarmerProfilePage: React.FC<FarmerProfilePageProps> = ({ onMenuClick, onNotificationClick }) => {
+    const { state, updateUser } = useApp();
     // State สำหรับควบคุมการเปิด/ปิด Modal แก้ไขโปรไฟล์
     const [isEditModalOpen, setEditModalOpen] = useState(false);
 
+    // แปลงข้อมูลจาก Database เป็น Profile format หรือใช้ mock data
+    const profile: Profile = state.currentUser ? {
+        id: state.currentUser.id,
+        firstName: state.currentUser.profile.firstName,
+        lastName: state.currentUser.profile.lastName,
+        phone: state.currentUser.profile.phone,
+        address: state.currentUser.profile.address,
+        province: state.currentUser.profile.province,
+        district: state.currentUser.profile.district,
+        subDistrict: state.currentUser.profile.subDistrict,
+        postalCode: state.currentUser.profile.postalCode,
+        lineUserId: state.currentUser.profile.lineUserId,
+        lineDisplayName: state.currentUser.profile.lineDisplayName,
+        linePictureUrl: state.currentUser.profile.linePictureUrl,
+        isRegistered: state.currentUser.isRegistered
+    } : (useMockData ? mockData.farmerProfile : {
+        id: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        address: '',
+        province: '',
+        district: '',
+        subDistrict: '',
+        postalCode: '',
+        isRegistered: false
+    });
+
     // ฟังก์ชันสำหรับจัดการเมื่อบันทึกข้อมูลที่แก้ไข
-    const handleSaveProfile = (updatedProfile: Profile) => {
-        onUpdateProfile(updatedProfile);
+    const handleSaveProfile = async (updatedProfile: Profile) => {
+        if (state.currentUser) {
+            const updates = {
+                profile: {
+                    firstName: updatedProfile.firstName,
+                    lastName: updatedProfile.lastName,
+                    phone: updatedProfile.phone,
+                    address: updatedProfile.address,
+                    province: updatedProfile.province,
+                    district: updatedProfile.district,
+                    subDistrict: updatedProfile.subDistrict,
+                    postalCode: updatedProfile.postalCode,
+                    lineUserId: updatedProfile.lineUserId,
+                    lineDisplayName: updatedProfile.lineDisplayName,
+                    linePictureUrl: updatedProfile.linePictureUrl
+                }
+            };
+            await updateUser(state.currentUser.id, updates);
+        }
         setEditModalOpen(false);
     };
 

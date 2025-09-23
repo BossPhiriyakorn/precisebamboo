@@ -9,9 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "moment": "^2.30.1",
+    "pdfjs-dist": "^5.4.149",
     "react": "^19.1.0",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "^19.1.0",
-    "@google/genai": "latest"
+    "react-pdf": "^10.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
