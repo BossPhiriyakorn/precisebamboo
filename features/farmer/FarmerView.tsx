@@ -20,6 +20,8 @@ import CheckStatusPage from './CheckStatusPage';
 import FarmerRegistrationFlow from './registration/FarmerRegistrationFlow';
 import ContractPage from './ContractPage';
 import ShipmentStatusPage from './ShipmentStatusPage';
+import PracticeCalendarPage from './PracticeCalendarPage';
+import PracticeCalendarEnhanced from './PracticeCalendarEnhanced';
 
 
 // Props ที่คอมโพเนนต์นี้ต้องการ
@@ -171,6 +173,11 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
                     onMenuClick={() => setIsSidebarOpen(true)}
                     onNotificationClick={() => setNotificationOpen(true)}
                 />;
+            case Page.PRACTICE_CALENDAR:
+                return <PracticeCalendarPage 
+                    onMenuClick={() => setIsSidebarOpen(true)}
+                    onNotificationClick={() => setNotificationOpen(true)}
+                />;
             default: 
                 return <FarmerDashboard onMenuClick={() => setIsSidebarOpen(true)} onNotificationClick={() => setNotificationOpen(true)} onNavigate={handleNavClick} onStartRegistration={handleStartRegistration} />;
         }
@@ -183,6 +190,7 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
     const isContractPage = activePage === Page.CONTRACT;
     const isBookingPage = activePage === Page.BOOKING;
     const isShipmentStatusPage = activePage === Page.SHIPMENT_STATUS;
+    const isPracticeCalendarPage = activePage === Page.PRACTICE_CALENDAR;
 
     // The main content is now rendered conditionally inside the main layout
     const mainContent = renderPageContent();
@@ -219,7 +227,7 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
                         onNotificationClick={() => setNotificationOpen(true)}
                         onBackClick={isKnowledgePage ? () => handleNavClick(Page.DASHBOARD) : undefined}
                     />
-                    <main className="container mx-auto p-4 sm:p-6 lg:p-8 -mt-16 relative z-10">
+                    <main className="container mx-auto -mt-16 relative z-10">
                         {mainContent}
                     </main>
                 </div>

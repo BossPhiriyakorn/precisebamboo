@@ -5,6 +5,7 @@ import * as mockData from '../../data/mockData';
 import FactorySidebar from './FactorySidebar';
 import FactoryDashboard from './FactoryDashboard';
 import FactoryBookingPage from './FactoryBookingPage';
+import FactoryCalendarPage from './FactoryCalendarPage';
 import Card from '../../components/Card';
 import TopHeader from '../../components/TopHeader';
 
@@ -30,6 +31,8 @@ const FactoryLayout: React.FC<FactoryLayoutProps> = ({ onLogout }) => {
                         />;
             case Page.BOOKING:
                 return <FactoryBookingPage schedule={schedule} onUpdateSchedule={handleUpdateSchedule} />;
+            case Page.CALENDAR:
+                return <FactoryCalendarPage schedule={schedule} onUpdateSchedule={handleUpdateSchedule} />;
             case Page.FINANCE:
                  return <Card><h1 className="text-3xl font-bold">Factory Finance & Logistics Page</h1><p>This page is under construction.</p></Card>;
             case Page.PROFILE:

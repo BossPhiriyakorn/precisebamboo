@@ -259,6 +259,72 @@ export const ContractQueueIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
+// Icons for the new booking menu design
+export const AppointmentListIconNew = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <circle cx="24" cy="24" r="20" fill="currentColor" fillOpacity="0.1"/>
+        <path d="M16 16H32C33.1046 16 34 16.8954 34 18V30C34 31.1046 33.1046 32 32 32H16C14.8954 32 14 31.1046 14 30V18C14 16.8954 14.8954 16 16 16Z" fill="currentColor" fillOpacity="0.2"/>
+        <path d="M18 12H20V16H18V12Z" fill="currentColor"/>
+        <path d="M28 12H30V16H28V12Z" fill="currentColor"/>
+        <path d="M16 20H32" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="20" cy="26" r="2" fill="currentColor"/>
+        <circle cx="24" cy="26" r="2" fill="currentColor"/>
+        <circle cx="28" cy="26" r="2" fill="currentColor"/>
+        <rect x="18" y="28" width="4" height="2" rx="1" fill="currentColor"/>
+        <rect x="22" y="28" width="4" height="2" rx="1" fill="currentColor"/>
+        <rect x="26" y="28" width="4" height="2" rx="1" fill="currentColor"/>
+    </svg>
+);
+
+export const SeedlingQueueIconNew = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <circle cx="24" cy="24" r="20" fill="currentColor" fillOpacity="0.1"/>
+        <circle cx="20" cy="20" r="3" fill="currentColor" fillOpacity="0.3"/>
+        <circle cx="28" cy="20" r="3" fill="currentColor" fillOpacity="0.3"/>
+        <path d="M20 23V30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M28 23V30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M18 30H30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M22 30V34" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M26 30V34" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M24 34C24 35.1046 23.1046 36 22 36H26C27.1046 36 28 35.1046 28 34" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M24 20L24 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M24 16L22 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M24 16L26 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+);
+
+export const CuttingQueueIconNew = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <circle cx="24" cy="24" r="20" fill="currentColor" fillOpacity="0.1"/>
+        <rect x="26" y="12" width="4" height="24" rx="2" fill="currentColor" fillOpacity="0.3"/>
+        <path d="M28 16H26" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M28 20H26" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M28 24H26" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M28 28H26" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M28 32H26" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="18" cy="20" r="2" fill="currentColor"/>
+        <path d="M18 22V30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M12 30L20 22" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M16 30L24 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+);
+
+export const ContractQueueIconNew = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <circle cx="24" cy="24" r="20" fill="currentColor" fillOpacity="0.1"/>
+        <rect x="14" y="12" width="20" height="24" rx="2" fill="currentColor" fillOpacity="0.2"/>
+        <path d="M18 18H30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M18 24H30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M18 30H26" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M30 22L36 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M36 16L36 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M36 16L32 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="32" cy="32" r="3" fill="currentColor" fillOpacity="0.3"/>
+        <path d="M32 29L32 35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M30 32L34 32" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+);
+
 // Icons for Shipment Status Stepper
 export const ShipmentLocationIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -297,7 +363,40 @@ export const ShipmentFactoryIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
+// =================================================================
+// Export Icons Object
+// =================================================================
+export const Icons = {
+    PreciseLogo,
+    FullPreciseLogo,
+    HomeIcon,
+    CalendarIcon,
+    BookIcon,
+    TruckIcon,
+    UserCircleIcon,
+    BellIcon,
+    LogoutIcon,
+    Bars3Icon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    UserPlusIcon,
+    SproutIcon,
+    BuildingOfficeIcon,
+    UserGroupIcon,
+    AcademicCapIcon,
+    BriefcaseIcon,
+    ClipboardDocumentListIcon,
+    DocumentTextIcon,
+    WrenchScrewdriverIcon,
+    BambooIcon,
+    MapIcon,
+    ShipmentFactoryIcon,
+    // New booking menu icons
+    AppointmentListIconNew,
+    SeedlingQueueIconNew,
+    CuttingQueueIconNew,
+    ContractQueueIconNew
+};
 
 // =================================================================
 // รายการเมนู (Navigation Items)
@@ -308,6 +407,7 @@ export const farmerNavItems: NavItem[] = [
     { page: Page.DASHBOARD, icon: HomeIcon },
     { page: Page.PLOT_MANAGEMENT, icon: MapIcon },
     { page: Page.BOOKING, icon: CalendarIcon },
+    { page: Page.CALENDAR, icon: CalendarIcon },
     { page: Page.FINANCE, icon: TruckIcon }, // This covers 'ขนส่ง'
     { page: Page.KNOWLEDGE, icon: BookIcon }, // This covers 'ข่าวสาร'
     { page: Page.PROFILE, icon: UserCircleIcon },
@@ -317,6 +417,7 @@ export const farmerNavItems: NavItem[] = [
 export const factoryNavItems: NavItem[] = [
     { page: Page.DASHBOARD, icon: HomeIcon },
     { page: Page.BOOKING, icon: CalendarIcon },
+    { page: Page.CALENDAR, icon: CalendarIcon },
     { page: Page.FINANCE, icon: TruckIcon },
     { page: Page.PROFILE, icon: UserCircleIcon },
 ];
