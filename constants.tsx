@@ -151,6 +151,10 @@ export const AcademicCapIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const BriefcaseIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.098a2.25 2.25 0 01-2.25 2.25h-13.5a2.25 2.25 0 01-2.25-2.25V14.15M16.5 18.75h-9" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75h.008v.008H12v-.008z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 15a2.25 2.25 0 01-2.25-2.25V9.75a2.25 2.25 0 014.5 0v3A2.25 2.25 0 0112 15z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6.75h-7.5a2.25 2.25 0 00-2.25 2.25v3.75c0 1.242.923 2.38 2.158 2.613a4.505 4.505 0 005.684 0c1.235-.233 2.158-1.37 2.158-2.613V9a2.25 2.25 0 00-2.25-2.25z" /></svg>
 );
+
+export const LinkIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
+);
 export const Bars3Icon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
 );
@@ -385,6 +389,7 @@ export const Icons = {
     UserGroupIcon,
     AcademicCapIcon,
     BriefcaseIcon,
+    LinkIcon,
     ClipboardDocumentListIcon,
     DocumentTextIcon,
     WrenchScrewdriverIcon,

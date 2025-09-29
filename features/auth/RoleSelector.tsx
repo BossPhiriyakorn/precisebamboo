@@ -103,7 +103,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ onSelectRole, onStartRegist
                 <div className="absolute top-0 right-0 w-[2px] h-full bg-white"></div>
               </div>
               
-              {/* เกษตรกร */}
+              {/* เกษตรกร - Mock: ไปหน้าแรกเลย */}
               <div className="relative">
                 <div className="transform translate-x-[20%]">
                   <MenuButton

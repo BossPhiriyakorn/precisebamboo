@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "dev:local": "vite --host localhost --port 5173",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "preview:local": "vite preview --host localhost --port 4173"
   },
   "dependencies": {
-    "@daypilot/daypilot-lite-react": "^4.5.0",
-    "@google/genai": "latest",
     "moment": "^2.30.1",
     "pdfjs-dist": "^5.4.149",
     "react": "^19.1.0",

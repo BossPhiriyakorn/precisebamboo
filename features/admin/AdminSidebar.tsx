@@ -12,6 +12,7 @@ export type AdminPageKey =
     | 'factory_list'
     | 'shipments'
     | 'calendar'
+    | 'role_links'
     | 'users_farmer'
     | 'users_factory'
     | 'users_promoter'
@@ -189,7 +190,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activePage, setActivePage, 
                     </div>
                 </div>
                 
-                 <MainMenuItem label="คาร์บอนเครดิต" pageKey="carbon_credit" icon={Icons.TrendingUpIcon} isActive={activePage === 'carbon_credit'} onClick={() => setActivePage('carbon_credit')} />
+                 <MainMenuItem label="จัดการลิงค์เข้าสู่ระบบ" pageKey="role_links" icon={Icons.LinkIcon} isActive={activePage === 'role_links'} onClick={() => setActivePage('role_links')} />
+                <MainMenuItem label="คาร์บอนเครดิต" pageKey="carbon_credit" icon={Icons.TrendingUpIcon} isActive={activePage === 'carbon_credit'} onClick={() => setActivePage('carbon_credit')} />
 
                 {/* เมนูหลัก: การจัดการคิว */}
                 <div>

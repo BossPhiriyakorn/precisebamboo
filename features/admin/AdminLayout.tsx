@@ -13,6 +13,7 @@ import PolicyManagementPage from './PolicyManagementPage';
 import AdminCalendarPage from './AdminCalendarPage';
 import QueueSeedlingPage from './QueueSeedlingPage';
 import QueueCuttingPage from './QueueCuttingPage';
+import RoleLinksPage from './RoleLinksPage';
 import * as mockData from '../../data/mockData';
 
 
@@ -91,6 +92,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ onLogout, policyContent, term
                 return <QueueCuttingPage />;
             case 'calendar':
                 return <AdminCalendarPage bookings={[...mockData.farmerBookings, ...mockData.factorySchedule]} />;
+            case 'role_links':
+                return <RoleLinksPage />;
 
             default:
                 return <AdminDashboard />;

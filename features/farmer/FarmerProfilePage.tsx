@@ -2,7 +2,7 @@
 // คอมโพเนนต์สำหรับหน้าโปรไฟล์ของเกษตรกร (ดีไซน์ใหม่)
 
 import React, { useState } from 'react';
-import { Profile, PromoterInfo, FarmerStatus, Page } from '../../types';
+import { Profile, PromoterInfo, FarmerStatus, Page, RegistrationStatus, PromoterStatus } from '../../types';
 import * as Icons from '../../constants';
 import ProfileEditModal from './ProfileEditModal';
 import FarmerHeader from './FarmerHeader';
@@ -49,6 +49,19 @@ const InfoItem: React.FC<{
     </div>
 );
 
+
+// ฟังก์ชันสำหรับตรวจสอบว่าควรแสดงข้อมูลที่อยู่หรือไม่
+const shouldShowAddress = (profile: Profile): boolean => {
+    return profile.isDeveloperMode || 
+           profile.hasSubmittedDocuments || 
+           profile.registrationStatus === RegistrationStatus.DOCUMENTS_SUBMITTED;
+};
+
+// ฟังก์ชันสำหรับตรวจสอบว่าควรแสดงข้อมูลนักส่งเสริมหรือไม่
+const shouldShowPromoter = (profile: Profile): boolean => {
+    return profile.isDeveloperMode || 
+           profile.promoterStatus === PromoterStatus.CONFIRMED;
+};
 
 const FarmerProfilePage: React.FC<FarmerProfilePageProps> = ({ profile, onUpdateProfile, onMenuClick, onNotificationClick }) => {
     // State สำหรับควบคุมการเปิด/ปิด Modal แก้ไขโปรไฟล์
@@ -131,11 +144,21 @@ const FarmerProfilePage: React.FC<FarmerProfilePageProps> = ({ profile, onUpdate
                             label="เบอร์โทรศัพท์"
                             value={profile.phone}
                         />
-                        <InfoItem 
-                            icon={Icons.MapPinIcon}
-                            label="ที่อยู่"
-                            value={profile.address.fullAddressText}
-                        />
+                        {/* แสดงที่อยู่ตามเงื่อนไข */}
+                        {shouldShowAddress(profile) ? (
+                            <InfoItem 
+                                icon={Icons.MapPinIcon}
+                                label="ที่อยู่"
+                                value={profile.address.fullAddressText || 'ยังไม่มีข้อมูลที่อยู่'}
+                            />
+                        ) : (
+                            <InfoItem 
+                                icon={Icons.MapPinIcon}
+                                label="ที่อยู่"
+                                value="ข้อมูลจะแสดงหลังจากลงทะเบียนและส่งเอกสาร"
+                                className="text-gray-500 italic"
+                            />
+                        )}
                          <InfoItem 
                             icon={Icons.MailOutlineIcon}
                             label="อีเมล"
@@ -143,24 +166,41 @@ const FarmerProfilePage: React.FC<FarmerProfilePageProps> = ({ profile, onUpdate
                         />
                     </InfoCard>
 
-                    {/* Promoter Info Card */}
-                    {profile.promoterInfo && (
+                    {/* Promoter Info Card - แสดงตามเงื่อนไข */}
+                    {shouldShowPromoter(profile) ? (
                         <InfoCard title="ข้อมูลนักส่งเสริม">
-                            <InfoItem 
-                                icon={Icons.UserOutlineIcon}
-                                label="ชื่อ นามสกุล"
-                                value={profile.promoterInfo.name}
-                            />
-                            <InfoItem 
-                                icon={Icons.PhoneOutlineIcon}
-                                label="เบอร์โทรศัพท์"
-                                value={profile.promoterInfo.phone}
-                            />
-                            <InfoItem 
-                                icon={Icons.MailOutlineIcon}
-                                label="อีเมล"
-                                value={profile.promoterInfo.email}
-                            />
+                            {profile.promoterInfo ? (
+                                <>
+                                    <InfoItem 
+                                        icon={Icons.UserOutlineIcon}
+                                        label="ชื่อ นามสกุล"
+                                        value={profile.promoterInfo.name}
+                                    />
+                                    <InfoItem 
+                                        icon={Icons.PhoneOutlineIcon}
+                                        label="เบอร์โทรศัพท์"
+                                        value={profile.promoterInfo.phone}
+                                    />
+                                    <InfoItem 
+                                        icon={Icons.MailOutlineIcon}
+                                        label="อีเมล"
+                                        value={profile.promoterInfo.email}
+                                    />
+                                </>
+                            ) : (
+                                <div className="text-center py-4 text-gray-500">
+                                    <Icons.UserOutlineIcon className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                                    <p>ยังไม่มีนักส่งเสริมดูแล</p>
+                                    <p className="text-sm">ข้อมูลจะแสดงเมื่อมีนักส่งเสริมยืนยันการดูแล</p>
+                                </div>
+                            )}
+                        </InfoCard>
+                    ) : (
+                        <InfoCard title="ข้อมูลนักส่งเสริม">
+                            <div className="text-center py-4 text-gray-500">
+                                <Icons.UserOutlineIcon className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                                <p>ข้อมูลจะแสดงเมื่อมีนักส่งเสริมยืนยันการดูแล</p>
+                            </div>
                         </InfoCard>
                     )}
                 </div>

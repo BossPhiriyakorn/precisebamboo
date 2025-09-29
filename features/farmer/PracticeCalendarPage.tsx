@@ -83,6 +83,33 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         return getTasksForDate(day);
     };
 
+    // ฟังก์ชันช่วยในการคำนวณความสูงของ task block ให้แม่นยำ
+    const calculateTaskBlockHeight = (startTime: string, endTime: string) => {
+        const startHour = parseInt(startTime.split(':')[0]);
+        const startMinute = parseInt(startTime.split(':')[1]);
+        const endHour = parseInt(endTime.split(':')[0]);
+        const endMinute = parseInt(endTime.split(':')[1]);
+        
+        const startTimeInMinutes = startHour * 60 + startMinute;
+        const endTimeInMinutes = endHour * 60 + endMinute;
+        
+        // คำนวณความสูงตามสัดส่วนที่แม่นยำ
+        const pixelsPerMinute = 80 / 120; // 0.6667px per minute
+        const durationInMinutes = endTimeInMinutes - startTimeInMinutes;
+        const heightInPixels = durationInMinutes * pixelsPerMinute;
+        
+        // กำหนดขอบเขตความสูง
+        const minHeight = 20;
+        const maxHeight = 500;
+        const finalHeight = Math.max(Math.min(heightInPixels, maxHeight), minHeight);
+        
+        return {
+            height: finalHeight,
+            duration: durationInMinutes,
+            isAligned: (endTimeInMinutes % 60) === 0 // ตรวจสอบการจบที่เส้นเวลาทุก 1 ชั่วโมง
+        };
+    };
+
     // ฟังก์ชันสำหรับการสร้างรายการวันในสัปดาห์
     const generateWeekDays = () => {
         const today = new Date(currentDate);
@@ -195,6 +222,16 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
             },
             {
                 id: 5,
+                title: 'บรรจุภัณฑ์',
+                description: 'บรรจุภัณฑ์ผลผลิตสำหรับจำหน่าย',
+                type: 'practice',
+                completed: false,
+                startTime: '14:00',
+                endTime: '16:00',
+                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 21)
+            },
+            {
+                id: 6,
                 title: 'รดน้ำต้นไม้ แปลงไผ่ 1',
                 description: 'รดน้ำต้นไผ่ในแปลงที่ 1 (รอบที่ 2)',
                 type: 'practice',
@@ -206,7 +243,7 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         ],
         '22': [
             {
-                id: 6,
+                id: 9,
                 title: 'ตรวจสอบสุขภาพต้นไม้',
                 description: 'ตรวจสอบสุขภาพและโรคของต้นไผ่',
                 type: 'practice',
@@ -218,7 +255,7 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         ],
         '23': [
             {
-                id: 7,
+                id: 10,
                 title: 'เก็บเกี่ยวผลผลิต',
                 description: 'เก็บเกี่ยวผลผลิตจากแปลงไผ่',
                 type: 'harvest',
@@ -228,7 +265,7 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                 date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 23)
             },
             {
-                id: 8,
+                id: 11,
                 title: 'บรรจุภัณฑ์',
                 description: 'บรรจุภัณฑ์ผลผลิตสำหรับจำหน่าย',
                 type: 'practice',
@@ -240,7 +277,7 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         ],
         '24': [
             {
-                id: 9,
+                id: 12,
                 title: 'ประชุมทีม',
                 description: 'ประชุมทีมเพื่อวางแผนการทำงาน',
                 type: 'meeting',
@@ -252,107 +289,47 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
         ],
         '25': [
             {
-                id: 10,
+                id: 13,
                 title: 'รดน้ำตอนเช้า',
                 description: 'รดน้ำต้นไม้ในตอนเช้า',
                 type: 'practice',
                 completed: false,
-                startTime: '08:30',
-                endTime: '09:30',
+                startTime: '08:00',
+                endTime: '10:00',
                 date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25)
             },
             {
-                id: 11,
+                id: 14,
                 title: 'ตรวจสอบระบบน้ำ',
                 description: 'ตรวจสอบและซ่อมแซมระบบน้ำ',
                 type: 'practice',
                 completed: false,
-                startTime: '14:30',
-                endTime: '16:30',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25)
-            },
-            {
-                id: 12,
-                title: 'ทำความสะอาดแปลง',
-                description: 'ทำความสะอาดและจัดระเบียบแปลง',
-                type: 'practice',
-                completed: false,
-                startTime: '17:00',
-                endTime: '19:00',
+                startTime: '14:00',
+                endTime: '16:00',
                 date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25)
             }
         ],
         '26': [
             {
-                id: 13,
-                title: 'งานสั้น 30 นาที',
-                description: 'งานที่ใช้เวลา 30 นาที',
-                type: 'practice',
-                completed: false,
-                startTime: '09:15',
-                endTime: '09:45',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 26)
-            },
-            {
-                id: 14,
-                title: 'งานยาว 3 ชั่วโมง',
-                description: 'งานที่ใช้เวลา 3 ชั่วโมง',
-                type: 'practice',
-                completed: false,
-                startTime: '11:00',
-                endTime: '14:00',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 26)
-            },
-            {
-                id: 15,
+                id: 16,
                 title: 'งานข้ามช่วงเวลา',
-                description: 'งานที่ข้ามจาก 15:30 ถึง 17:30',
+                description: 'งานที่ข้ามจาก 15:00 ถึง 17:00',
                 type: 'practice',
                 completed: false,
-                startTime: '15:30',
-                endTime: '17:30',
+                startTime: '15:00',
+                endTime: '17:00',
                 date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 26)
             }
         ],
         '27': [
             {
-                id: 16,
-                title: 'งาน 15 นาที',
-                description: 'งานสั้นมาก 15 นาที',
-                type: 'practice',
-                completed: false,
-                startTime: '08:45',
-                endTime: '09:00',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 27)
-            },
-            {
-                id: 17,
-                title: 'งาน 45 นาที',
-                description: 'งาน 45 นาที',
-                type: 'practice',
-                completed: false,
-                startTime: '10:15',
-                endTime: '11:00',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 27)
-            },
-            {
-                id: 18,
-                title: 'งาน 1.5 ชั่วโมง',
-                description: 'งาน 1 ชั่วโมง 30 นาที',
-                type: 'practice',
-                completed: false,
-                startTime: '13:30',
-                endTime: '15:00',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 27)
-            },
-            {
                 id: 19,
-                title: 'งาน 2.5 ชั่วโมง',
-                description: 'งาน 2 ชั่วโมง 30 นาที',
+                title: 'งานประจำวัน',
+                description: 'งานประจำวันทั่วไป',
                 type: 'practice',
                 completed: false,
-                startTime: '16:00',
-                endTime: '18:30',
+                startTime: '13:00',
+                endTime: '15:00',
                 date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 27)
             }
         ]
@@ -535,7 +512,7 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                                             {timeSlots.map((slot, index) => (
                                                 <div
                                                     key={index}
-                                                    className="h-20 flex items-center justify-end pr-4 text-sm text-gray-600 border-b border-gray-200"
+                                                    className="h-20 flex items-center justify-end pr-4 text-sm text-gray-500 border-b border-gray-200"
                                                 >
                                                     {slot.time}
                                                 </div>
@@ -550,8 +527,6 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                                                     key={index}
                                                     className="h-20 border-b border-gray-200 relative"
                                                 >
-                                                    {/* เส้นบอกเวลาย่อย (30 นาที) */}
-                                                    <div className="absolute top-1/2 left-0 right-0 border-t border-gray-100"></div>
                                                 </div>
                                             ))}
                                             
@@ -569,19 +544,51 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                                                     const endTimeInMinutes = endHour * 60 + endMinute;
                                                     const durationInMinutes = endTimeInMinutes - startTimeInMinutes;
                                                     
-                                                    // คำนวณตำแหน่งจาก 8:00 (480 นาที)
-                                                    // แต่ละ time slot มีความสูง 80px และครอบคลุม 2 ชั่วโมง
-                                                    // ดังนั้น 1 ชั่วโมง = 40px, 1 นาที = 40/60 = 0.6667px
+                                                    // ใช้ฟังก์ชันช่วยในการคำนวณความสูง
+                                                    const heightCalculation = calculateTaskBlockHeight(task.startTime, task.endTime);
+                                                    
+                                                    // คำนวณตำแหน่งและความสูงให้แม่นยำ
+                                                    // แต่ละ time slot มีความสูง 80px และครอบคลุม 2 ชั่วโมง (120 นาที)
+                                                    // ดังนั้น 1 นาที = 80px / 120 นาที = 0.6667px
+                                                    const pixelsPerMinute = 80 / 120; // 0.6667px per minute
+                                                    
+                                                    // คำนวณตำแหน่งเริ่มต้นจาก 8:00 (480 นาที)
                                                     const startOffsetInMinutes = startTimeInMinutes - (8 * 60);
-                                                    const startOffsetInPixels = (startOffsetInMinutes / 60) * 40;
+                                                    const startOffsetInPixels = startOffsetInMinutes * pixelsPerMinute;
                                                     
-                                                    // คำนวณตำแหน่งจบเพื่อให้แน่ใจว่าจบที่ endTime
+                                                    // คำนวณตำแหน่งสิ้นสุดจาก 8:00 (480 นาที)
                                                     const endOffsetInMinutes = endTimeInMinutes - (8 * 60);
-                                                    const endOffsetInPixels = (endOffsetInMinutes / 60) * 40;
+                                                    const endOffsetInPixels = endOffsetInMinutes * pixelsPerMinute;
                                                     
-                                                    // ใช้ความสูงที่คำนวณจากระยะห่างระหว่าง start และ end
-                                                    const calculatedHeight = endOffsetInPixels - startOffsetInPixels;
-                                                    const finalHeight = Math.max(calculatedHeight, 20); // ความสูงขั้นต่ำ 20px
+                                                    // ปรับปรุงการคำนวณให้แม่นยำขึ้น
+                                                    // ใช้ Math.floor สำหรับตำแหน่งเริ่มต้นเพื่อให้แน่ใจว่าไม่เกินขอบเขต
+                                                    const adjustedStartOffset = Math.floor(startOffsetInPixels);
+                                                    
+                                                    // คำนวณความสูงที่แม่นยำจากตำแหน่งเริ่มต้นและสิ้นสุด
+                                                    // ให้จบที่เส้นเวลาที่ถูกต้อง
+                                                    const adjustedEndOffset = Math.round(endOffsetInPixels);
+                                                    
+                                                    // คำนวณความสูงที่แม่นยำโดยการหาความแตกต่างระหว่างตำแหน่งเริ่มต้นและสิ้นสุด
+                                                    const preciseHeight = adjustedEndOffset - adjustedStartOffset;
+                                                    
+                                                    // ตรวจสอบว่าความสูงที่คำนวณได้ตรงกับเส้นเวลาหรือไม่
+                                                    // หากไม่ตรง ให้ปรับให้ตรงกับเส้นเวลาที่ใกล้ที่สุด
+                                                    const timeSlotHeight = 80; // ความสูงของแต่ละ time slot
+                                                    const timeSlotDuration = 120; // ระยะเวลาในแต่ละ time slot (นาที)
+                                                    
+                                                    // คำนวณตำแหน่งที่ควรจะจบตามเส้นเวลา
+                                                    const expectedEndOffset = Math.round((endTimeInMinutes - (8 * 60)) * (timeSlotHeight / timeSlotDuration));
+                                                    
+                                                    // คำนวณความสูงจากเวลาจริงที่แม่นยำ
+                                                    // ใช้เวลาจริงในการคำนวณความสูง
+                                                    const actualDurationInPixels = durationInMinutes * (timeSlotHeight / timeSlotDuration);
+                                                    
+                                                    // ปรับปรุงการคำนวณให้เต็มเวลาจริง
+                                                    // ใช้ความสูงที่คำนวณจากเวลาจริงโดยตรง
+                                                    const finalPreciseHeight = Math.max(actualDurationInPixels, 20);
+                                                    
+                                                    // ตรวจสอบว่าตำแหน่งสิ้นสุดตรงกับเส้นเวลาหรือไม่
+                                                    const isEndTimeAligned = heightCalculation.isAligned;
 
                                                     // ตรวจสอบว่า event อยู่ในช่วงเวลาที่แสดง (8:00-24:00)
                                                     if (startTimeInMinutes < 8 * 60 || endTimeInMinutes > 24 * 60) {
@@ -592,31 +599,50 @@ const PracticeCalendarPage: React.FC<PracticeCalendarPageProps> = ({
                                                     console.log(`Event: ${task.title}`, {
                                                         startTime: task.startTime,
                                                         endTime: task.endTime,
-                                                        durationInMinutes,
-                                                        finalHeight,
-                                                        startOffsetInPixels,
-                                                        endOffsetInPixels
+                                                        durationInMinutes: `${durationInMinutes} นาที`,
+                                                        pixelsPerMinute: `${pixelsPerMinute}px/นาที`,
+                                                        startOffsetInPixels: `${startOffsetInPixels}px`,
+                                                        adjustedStartOffset: `${adjustedStartOffset}px`,
+                                                        endOffsetInPixels: `${endOffsetInPixels}px`,
+                                                        adjustedEndOffset: `${adjustedEndOffset}px`,
+                                                        expectedEndOffset: `${expectedEndOffset}px`,
+                                                        actualDurationInPixels: `${actualDurationInPixels}px`,
+                                                        preciseHeight: `${preciseHeight}px`,
+                                                        finalPreciseHeight: `${finalPreciseHeight}px`,
+                                                        isEndTimeAligned: isEndTimeAligned,
+                                                        timeRange: `${task.startTime} - ${task.endTime}`,
+                                                        calculation: `เริ่มที่ ${adjustedStartOffset}px, สูง ${finalPreciseHeight}px (${durationInMinutes} นาที = ${actualDurationInPixels}px), จบตรงเส้นเวลา: ${isEndTimeAligned}`
                                                     });
 
                                                     return (
                                                         <div
                                                             key={taskIndex}
-                                                            className="absolute bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors cursor-pointer flex flex-col justify-center"
+                                                            className="absolute text-white rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-center"
                                                             style={{
-                                                                top: `${startOffsetInPixels}px`,
-                                                                height: `${finalHeight}px`,
-                                                                left: '12px',
-                                                                right: '12px',
+                                                                top: `${adjustedStartOffset}px`,
+                                                                height: `${finalPreciseHeight}px`,
+                                                                left: '8px',
+                                                                right: '8px',
                                                                 zIndex: 10,
-                                                                padding: finalHeight < 40 ? '4px 8px' : '8px 12px'
+                                                                padding: finalPreciseHeight < 40 ? '6px 12px' : '12px 16px',
+                                                                backgroundColor: '#3B82F6', // สีน้ำเงินสดใสเหมือนรูปภาพ
+                                                                borderRadius: '8px',
+                                                                // เพิ่ม border-bottom เพื่อให้เห็นเส้นขอบล่างชัดเจน
+                                                                borderBottom: isEndTimeAligned ? '2px solid #2563eb' : 'none',
+                                                                // ปรับ margin-bottom เพื่อให้จบที่เส้นเวลาพอดี
+                                                                marginBottom: isEndTimeAligned ? '0px' : '0px',
+                                                                // ใช้ box-sizing: border-box เพื่อให้ความสูงรวม border
+                                                                boxSizing: 'border-box',
+                                                                // ปรับความสูงให้เต็มเวลาจริง
+                                                                minHeight: '20px'
                                                             }}
                                                         >
-                                                            <div className="font-medium text-sm mb-1 truncate">{task.title}</div>
-                                                            <div className="flex items-center text-xs opacity-90">
+                                                            <div className="font-semibold text-sm mb-1 truncate leading-tight">{task.title}</div>
+                                                            <div className="flex items-center text-xs opacity-95">
                                                                 <svg className="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                 </svg>
-                                                                <span className="truncate">{task.startTime} - {task.endTime}</span>
+                                                                <span className="truncate font-medium">{task.startTime} - {task.endTime}</span>
                                                             </div>
                                                         </div>
                                                     );

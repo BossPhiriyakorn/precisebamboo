@@ -2,10 +2,11 @@
 // คอมโพเนนต์หลักสำหรับมุมมองของเกษตรกร (Farmer)
 // ทำหน้าที่เป็น Layout หลักและจัดการ State ที่ใช้ร่วมกันระหว่างหน้าย่อยต่างๆ ของเกษตรกร
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 // FIX: Import FarmerBooking to use as a specific type for new bookings.
-import { Page, UserRole, Booking, BookingStatus, Profile, FarmerBooking } from '../../types';
+import { Page, UserRole, Booking, BookingStatus, Profile, FarmerBooking, FarmerStatus, RegistrationStatus, PromoterStatus } from '../../types';
 import * as mockData from '../../data/mockData';
+import { getApprovedFarmer, saveFarmerRegistration, updateFarmerData, clearAllFarmerData, debugFarmerStorage } from '../../utils/farmerStorage';
 import KnowledgeBasePage from '../../components/KnowledgeBasePage';
 import FarmerDashboard from './FarmerDashboard';
 import FarmerProfilePage from './FarmerProfilePage';
@@ -36,12 +37,128 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
     const [activePage, setActivePage] = useState<Page>(Page.DASHBOARD); // State สำหรับหน้าที่กำลังแสดงผล
     const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null); // ID ของบทความที่เลือก (สำหรับหน้าคลังความรู้)
     const [bookings, setBookings] = useState<Booking[]>(mockData.farmerBookings); // State สำหรับรายการจองคิว
-    const [profile, setProfile] = useState<Profile>(mockData.farmerProfile); // State ข้อมูลโปรไฟล์
+    // ฟังก์ชันสำหรับสร้าง Profile ตามสถานะ
+    const createProfileWithStatus = (farmerData: any, isDeveloperMode: boolean = false): Profile => {
+        console.log('Creating profile with status:', { farmerData, isDeveloperMode });
+        
+        if (isDeveloperMode) {
+            // โหมดนักพัฒนา - ใช้ mockData และแสดงข้อมูลทั้งหมด
+            console.log('Using developer mode profile');
+            return {
+                ...mockData.developerProfile,
+                id: farmerData?.id || 'dev-farmer-1',
+                firstName: farmerData?.firstName || mockData.developerProfile.firstName,
+                lastName: farmerData?.lastName || mockData.developerProfile.lastName,
+                phone: farmerData?.phone || mockData.developerProfile.phone,
+                email: farmerData?.email || mockData.developerProfile.email,
+            };
+        }
+
+        if (farmerData) {
+            // ข้อมูลจริง - ตรวจสอบสถานะการลงทะเบียน
+            console.log('Using real farmer data:', farmerData);
+            const hasSubmittedDocs = farmerData.hasSubmittedDocuments || false;
+            const promoterStatus = farmerData.promoterStatus || PromoterStatus.NOT_ASSIGNED;
+            
+            const profile = {
+                id: farmerData.id,
+                firstName: farmerData.firstName,
+                lastName: farmerData.lastName,
+                phone: farmerData.phone,
+                email: farmerData.email || '',
+                address: hasSubmittedDocs ? farmerData.address : { 
+                    province: '', district: '', subdistrict: '', postalCode: '', 
+                    moo: '', street: '', soi: '', fullAddressText: '' 
+                },
+                status: FarmerStatus.APPROVED,
+                promoterInfo: promoterStatus === PromoterStatus.CONFIRMED ? farmerData.promoterInfo : undefined,
+                registrationStatus: hasSubmittedDocs ? RegistrationStatus.DOCUMENTS_SUBMITTED : RegistrationStatus.REGISTERED,
+                promoterStatus: promoterStatus,
+                hasSubmittedDocuments: hasSubmittedDocs,
+                isDeveloperMode: false
+            };
+            
+            console.log('Created profile from farmer data:', profile);
+            return profile;
+        }
+
+        // Fallback - ใช้ unregisteredProfile
+        console.log('Using unregistered profile fallback');
+        return mockData.unregisteredProfile;
+    };
+
+    // ใช้ข้อมูลจริงจาก farmerStorage แทน mockData
+    const [profile, setProfile] = useState<Profile>(() => {
+        const farmerData = getApprovedFarmer();
+        const isDeveloperMode = !farmerData; // ถ้าไม่มีข้อมูล = โหมดนักพัฒนา
+        
+        return createProfileWithStatus(farmerData, isDeveloperMode);
+    });
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isNotificationOpen, setNotificationOpen] = useState(false);
     const [currentView, setCurrentView] = useState<'main' | 'registration'>('main');
     const [isEditMode, setIsEditMode] = useState(false);
 
+    // =================================================================
+    // Effects
+    // =================================================================
+    
+    // อัปเดตข้อมูลโปรไฟล์เมื่อมีการเปลี่ยนแปลงใน farmerStorage
+    useEffect(() => {
+        const farmerData = getApprovedFarmer();
+        const isDeveloperMode = !farmerData;
+        setProfile(createProfileWithStatus(farmerData, isDeveloperMode));
+    }, []);
+
+    // ฟังก์ชันสำหรับรีเฟรชข้อมูลโปรไฟล์
+    const refreshProfile = () => {
+        console.log('Refreshing profile...');
+        const farmerData = getApprovedFarmer();
+        const isDeveloperMode = !farmerData;
+        const newProfile = createProfileWithStatus(farmerData, isDeveloperMode);
+        
+        console.log('New profile data:', newProfile);
+        setProfile(newProfile);
+    };
+
+    // ฟังก์ชันสำหรับตรวจสอบการเปลี่ยนแปลงใน localStorage
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'farmer_registrations') {
+                console.log('Farmer registration data changed, refreshing profile...');
+                refreshProfile();
+            }
+        };
+
+        const handleRegistrationUpdate = () => {
+            console.log('Farmer registration updated event received, refreshing profile...');
+            refreshProfile();
+        };
+
+        // ฟังการเปลี่ยนแปลงใน localStorage
+        window.addEventListener('storage', handleStorageChange);
+        
+        // ฟัง custom event สำหรับการอัปเดตข้อมูล
+        window.addEventListener('farmerRegistrationUpdated', handleRegistrationUpdate);
+        
+        // ฟังการเปลี่ยนแปลงในหน้าต่างเดียวกัน (สำหรับกรณีที่บันทึกข้อมูลใน tab เดียวกัน)
+        const interval = setInterval(() => {
+            const currentFarmerData = getApprovedFarmer();
+            const currentProfile = profile;
+            
+            // ตรวจสอบว่าข้อมูลเปลี่ยนแปลงหรือไม่
+            if (currentFarmerData && currentProfile.id !== currentFarmerData.id) {
+                console.log('Profile data mismatch detected, refreshing...');
+                refreshProfile();
+            }
+        }, 1000); // ตรวจสอบทุก 1 วินาที
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('farmerRegistrationUpdated', handleRegistrationUpdate);
+            clearInterval(interval);
+        };
+    }, [profile.id]);
 
     // =================================================================
     // Handlers
@@ -87,6 +204,20 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
     // จัดการการอัปเดตโปรไฟล์
     const handleUpdateProfile = (updatedProfile: Profile) => {
         setProfile(updatedProfile);
+        
+        // อัปเดตข้อมูลใน farmerStorage ด้วย
+        const farmerData = getApprovedFarmer();
+        if (farmerData) {
+            const updatedData = {
+                firstName: updatedProfile.firstName,
+                lastName: updatedProfile.lastName,
+                phone: updatedProfile.phone,
+                email: updatedProfile.email
+            };
+            
+            // ใช้ฟังก์ชัน updateFarmerData
+            updateFarmerData(farmerData.id, updatedData);
+        }
     };
 
     const handleStartRegistration = () => {
@@ -109,6 +240,17 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
         setIsEditMode(false);
         setActivePage(Page.CHECK_STATUS); 
         // In a real app, you might show a success toast here.
+    };
+
+    // ฟังก์ชันสำหรับ debug และรีเซ็ตข้อมูล
+    const handleDebugStorage = () => {
+        debugFarmerStorage();
+    };
+
+    const handleClearStorage = () => {
+        clearAllFarmerData();
+        refreshProfile();
+        alert('ข้อมูลถูกล้างแล้ว');
     };
 
     if (currentView === 'registration') {
@@ -230,6 +372,30 @@ const FarmerView: React.FC<FarmerViewProps> = ({ onLogout }) => {
                     <main className="container mx-auto -mt-16 relative z-10">
                         {mainContent}
                     </main>
+                </div>
+            )}
+            
+            {/* Debug buttons - แสดงเฉพาะใน development mode */}
+            {process.env.NODE_ENV === 'development' && (
+                <div className="fixed bottom-4 right-4 space-x-2 z-50">
+                    <button
+                        onClick={handleDebugStorage}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm"
+                    >
+                        Debug Storage
+                    </button>
+                    <button
+                        onClick={handleClearStorage}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm"
+                    >
+                        Clear Storage
+                    </button>
+                    <button
+                        onClick={refreshProfile}
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm"
+                    >
+                        Refresh Profile
+                    </button>
                 </div>
             )}
         </div>

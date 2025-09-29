@@ -160,17 +160,39 @@ export enum FarmerStatus {
     REJECTED = 'ไม่อนุมัติ',
 }
 
+// สถานะการลงทะเบียนและเอกสาร
+export enum RegistrationStatus {
+  NOT_REGISTERED = 'ยังไม่ลงทะเบียน',
+  REGISTERED = 'ลงทะเบียนแล้ว',
+  DOCUMENTS_SUBMITTED = 'ส่งเอกสารแล้ว',
+  APPROVED = 'อนุมัติแล้ว'
+}
+
+// สถานะการมอบหมายนักส่งเสริม
+export enum PromoterStatus {
+  NOT_ASSIGNED = 'ยังไม่มอบหมาย',
+  ASSIGNED = 'มอบหมายแล้ว',
+  CONFIRMED = 'ยืนยันแล้ว',
+  REJECTED = 'ปฏิเสธ'
+}
+
 // Interface สำหรับข้อมูลโปรไฟล์ผู้ใช้ (Updated)
 export interface Profile {
+  id?: string; // เพิ่ม id เป็น optional
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
-  lineId: string;
+  lineId?: string; // ทำให้ optional
   address: Address;
-  avatarUrl: string;
+  avatarUrl?: string; // ทำให้ optional
   status: FarmerStatus;
   promoterInfo?: PromoterInfo;
+  // เพิ่มสถานะใหม่
+  registrationStatus?: RegistrationStatus;
+  promoterStatus?: PromoterStatus;
+  hasSubmittedDocuments?: boolean;
+  isDeveloperMode?: boolean; // สำหรับการทดสอบโดยนักพัฒนา
 }
 
 // Enum for Knowledge Article Status in Admin Panel

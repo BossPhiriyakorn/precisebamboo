@@ -1,27 +1,6 @@
 // services/apiService.ts
 // This file centralizes API call logic for the application.
 
-// AI SDK removed
-
-/**
- * =================================================================
- * Gemini API Service (removed)
- * =================================================================
- * Previously interacted with Google Gemini API. This has been removed per requirements.
- */
-
-// No AI client used.
-
-/**
- * Generates text content using a specified model.
- * @param prompt The text prompt to send to the model.
- * @returns The generated text response.
- */
-export async function generateTextFromGemini(prompt: string): Promise<string> {
-    // Stubbed to keep app API surface stable after removing AI.
-    return "";
-}
-
 
 /**
  * =================================================================

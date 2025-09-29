@@ -13,7 +13,7 @@ export type RegistrationStatus = 'registering' | 'pending' | 'not_approved';
 interface FarmerRegistrationProps {
     onBackToRoleSelector: () => void;
     status: RegistrationStatus;
-    onSubmit: () => void;
+    onSubmit: (farmerData?: any) => void;
     onRetry: () => void;
     policyContent: string;
     termsContent: string;
@@ -102,7 +102,8 @@ const FarmerRegistration: React.FC<FarmerRegistrationProps> = ({ onBackToRoleSel
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (isFormValid) {
-            onSubmit();
+            // ส่งข้อมูลเกษตรกรไปยัง onSubmit
+            onSubmit(formData);
         }
     };
     

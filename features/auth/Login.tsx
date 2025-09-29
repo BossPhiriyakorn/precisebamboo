@@ -9,7 +9,8 @@ import * as Icons from '../../constants';
 interface LoginProps {
     role: UserRole;
     onLoginSuccess: () => void;
-    onBack: () => void;
+    onBack?: () => void;
+    isDirectLogin?: boolean;
 }
 
 const MOCK_CREDENTIALS = {
@@ -17,7 +18,7 @@ const MOCK_CREDENTIALS = {
     [UserRole.FACTORY]: { username: 'factory', password: 'factory123' },
 };
 
-const Login: React.FC<LoginProps> = ({ role, onLoginSuccess, onBack }) => {
+const Login: React.FC<LoginProps> = ({ role, onLoginSuccess, onBack, isDirectLogin = false }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -91,11 +92,21 @@ const Login: React.FC<LoginProps> = ({ role, onLoginSuccess, onBack }) => {
                         </button>
                     </div>
 
-                    <div className="mt-6 text-center">
-                        <button type="button" onClick={onBack} className="text-slate-600 hover:text-black font-semibold">
-                            &larr; กลับไปหน้าเลือกบทบาท
-                        </button>
-                    </div>
+                    {!isDirectLogin && onBack && (
+                        <div className="mt-6 text-center">
+                            <button type="button" onClick={onBack} className="text-slate-600 hover:text-black font-semibold">
+                                &larr; กลับไปหน้าเลือกบทบาท
+                            </button>
+                        </div>
+                    )}
+                    
+                    {isDirectLogin && (
+                        <div className="mt-6 text-center">
+                            <p className="text-slate-600 text-sm">
+                                เข้าสู่ระบบโดยตรงสำหรับ{role}
+                            </p>
+                        </div>
+                    )}
                 </form>
             </div>
         </div>

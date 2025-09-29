@@ -38,6 +38,8 @@ import {
   Plot,
   FarmerShipment,
   ShipmentProgressStatus,
+  RegistrationStatus,
+  PromoterStatus,
 } from '../types';
 import * as Icons from '../constants';
 
@@ -64,7 +66,41 @@ export const farmerProfile: Profile = {
     name: 'นายสมพง มีเงิน',
     phone: 'xxx-xxx-xxxx',
     email: 'xxx@example.com',
-  }
+  },
+  // เพิ่มสถานะใหม่
+  registrationStatus: RegistrationStatus.DOCUMENTS_SUBMITTED,
+  promoterStatus: PromoterStatus.CONFIRMED,
+  hasSubmittedDocuments: true,
+  isDeveloperMode: false
+};
+
+// ข้อมูลสำหรับโหมดนักพัฒนา (แสดงข้อมูลทั้งหมด)
+export const developerProfile: Profile = {
+  ...farmerProfile,
+  isDeveloperMode: true,
+  registrationStatus: RegistrationStatus.APPROVED,
+  promoterStatus: PromoterStatus.CONFIRMED,
+  hasSubmittedDocuments: true
+};
+
+// ข้อมูลสำหรับเกษตรกรที่ยังไม่ลงทะเบียน
+export const unregisteredProfile: Profile = {
+  firstName: 'ทดสอบ',
+  lastName: 'ระบบ',
+  phone: '081-234-5678',
+  email: 'test@example.com',
+  lineId: 'test_user',
+  address: {
+    province: '', district: '', subdistrict: '', postalCode: '', 
+    moo: '', street: '', soi: '', fullAddressText: ''
+  },
+  avatarUrl: '',
+  status: FarmerStatus.PENDING,
+  promoterInfo: undefined,
+  registrationStatus: RegistrationStatus.NOT_REGISTERED,
+  promoterStatus: PromoterStatus.NOT_ASSIGNED,
+  hasSubmittedDocuments: false,
+  isDeveloperMode: false
 };
 
 // ข้อมูลโปรไฟล์จำลองของโรงงาน

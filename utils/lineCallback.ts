@@ -22,6 +22,13 @@ export function handleLineCallback() {
     fullUrl: window.location.href
   });
   
+  console.log('URL Parameters:', {
+    code: code,
+    state: state,
+    error: error,
+    errorDescription: urlParams.get('error_description')
+  });
+  
   if (error) {
     return {
       success: false,
@@ -39,7 +46,30 @@ export function handleLineCallback() {
       'factory': UserRole.FACTORY
     };
     
-    const role = roleMap[state || 'farmer'] || UserRole.FARMER; // default เป็น farmer
+    // ตรวจสอบ state parameter อย่างระมัดระวัง
+    const normalizedState = state ? state.toLowerCase().trim() : 'farmer';
+    const role = roleMap[normalizedState] || UserRole.FARMER; // default เป็น farmer
+    
+    // Debug: ตรวจสอบการ mapping
+    console.log('UserRole values:', {
+      FARMER: UserRole.FARMER,
+      ADMIN: UserRole.ADMIN,
+      FACTORY: UserRole.FACTORY
+    });
+    
+    console.log('Role mapping:', {
+      originalState: state,
+      normalizedState: normalizedState,
+      mappedRole: role,
+      roleMap: roleMap,
+      isFarmer: role === UserRole.FARMER,
+      roleComparison: {
+        mappedRole: role,
+        userRoleFarmer: UserRole.FARMER,
+        strictEqual: role === UserRole.FARMER,
+        looseEqual: role == UserRole.FARMER
+      }
+    });
     
     return {
       success: true,
@@ -69,7 +99,15 @@ export function handleLineCallback() {
  */
 export function createLineLoginUrl(role: UserRole, redirectUri: string): string {
   const clientId = (import.meta as any).env?.VITE_LINE_CHANNEL_ID || 'YOUR_LINE_CHANNEL_ID';
-  const state = role; // ใช้ role เป็น state parameter
+  
+  // แปลง UserRole เป็น string สำหรับ state parameter
+  const roleMap: Record<UserRole, string> = {
+    [UserRole.FARMER]: 'farmer',
+    [UserRole.ADMIN]: 'admin',
+    [UserRole.FACTORY]: 'factory'
+  };
+  
+  const state = roleMap[role] || 'farmer';
   
   const params = new URLSearchParams({
     response_type: 'code',
@@ -89,7 +127,7 @@ export function createLineLoginUrl(role: UserRole, redirectUri: string): string 
  * @returns URL สำหรับ LINE Login ของเกษตรกร
  */
 export function createFarmerLineLoginUrl(baseUrl: string): string {
-  const redirectUri = `${baseUrl}/?role=เกษตรกร&action=line_callback`;
+  const redirectUri = `${baseUrl}/?action=line_callback`;
   return createLineLoginUrl(UserRole.FARMER, redirectUri);
 }
 
@@ -99,7 +137,7 @@ export function createFarmerLineLoginUrl(baseUrl: string): string {
  * @returns URL สำหรับ LINE Login ของแอดมิน
  */
 export function createAdminLineLoginUrl(baseUrl: string): string {
-  const redirectUri = `${baseUrl}/?role=แอดมิน&action=line_callback`;
+  const redirectUri = `${baseUrl}/?action=line_callback`;
   return createLineLoginUrl(UserRole.ADMIN, redirectUri);
 }
 
@@ -109,6 +147,6 @@ export function createAdminLineLoginUrl(baseUrl: string): string {
  * @returns URL สำหรับ LINE Login ของโรงงาน
  */
 export function createFactoryLineLoginUrl(baseUrl: string): string {
-  const redirectUri = `${baseUrl}/?role=โรงงาน&action=line_callback`;
+  const redirectUri = `${baseUrl}/?action=line_callback`;
   return createLineLoginUrl(UserRole.FACTORY, redirectUri);
 }

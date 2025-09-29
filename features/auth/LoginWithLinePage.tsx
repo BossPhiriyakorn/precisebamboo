@@ -1,6 +1,8 @@
 // features/auth/LoginWithLinePage.tsx
 import React from 'react';
 import * as Icons from '../../constants';
+import { createFarmerLineLoginUrl } from '../../utils/navigation';
+import { debugConfig } from '../../utils/config';
 
 // A simple Line icon component for the button
 const LineIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -12,12 +14,16 @@ const LineIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 const LoginWithLinePage = () => {
+    // Debug configuration เมื่อโหลดหน้า
+    React.useEffect(() => {
+        debugConfig();
+    }, []);
     
-    // Simulate redirecting to LINE for authorization
+    // Redirect to LINE for authorization
     const handleLineLogin = () => {
-        // In a real app, this would be a redirect to LINE's authorization URL.
-        // Here, we simulate the callback by reloading the page with a fake auth code.
-        window.location.href = window.location.pathname + '?code=fake_line_code&state=fake_state';
+        const lineLoginUrl = createFarmerLineLoginUrl();
+        console.log('Redirecting to LINE Login:', lineLoginUrl);
+        window.location.href = lineLoginUrl;
     };
 
     return (
