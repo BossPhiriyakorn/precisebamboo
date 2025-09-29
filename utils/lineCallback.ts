@@ -50,6 +50,15 @@ export function handleLineCallback() {
     const normalizedState = state ? state.toLowerCase().trim() : 'farmer';
     const role = roleMap[normalizedState] || UserRole.FARMER; // default เป็น farmer
     
+    console.log('Role mapping debug:', {
+      originalState: state,
+      normalizedState: normalizedState,
+      roleMap: roleMap,
+      mappedRole: role,
+      isFarmer: role === UserRole.FARMER,
+      userRoleFarmer: UserRole.FARMER
+    });
+    
     // Debug: ตรวจสอบการ mapping
     console.log('UserRole values:', {
       FARMER: UserRole.FARMER,

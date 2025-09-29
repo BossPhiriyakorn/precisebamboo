@@ -5,9 +5,9 @@ import React from 'react';
 
 // Enumสำหรับบทบาทของผู้ใช้
 export enum UserRole {
-  FARMER = 'เกษตรกร',
-  FACTORY = 'โรงงาน',
-  ADMIN = 'แอดมิน',
+  FARMER = 'farmer',
+  FACTORY = 'factory',
+  ADMIN = 'admin',
 }
 
 // Enumสำหรับหน้าต่างๆ ในแอปพลิเคชัน

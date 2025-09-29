@@ -121,6 +121,15 @@ function App() {
           });
           
           // ตรวจสอบ role และดำเนินการตาม role
+          console.log('Role comparison debug:', {
+            callbackRole: callbackResult.role,
+            userRoleFarmer: UserRole.FARMER,
+            strictEqual: callbackResult.role === UserRole.FARMER,
+            looseEqual: callbackResult.role == UserRole.FARMER,
+            typeofCallbackRole: typeof callbackResult.role,
+            typeofUserRoleFarmer: typeof UserRole.FARMER
+          });
+          
           if (callbackResult.role === UserRole.FARMER) {
             console.log('✅ Processing FARMER role...');
             
