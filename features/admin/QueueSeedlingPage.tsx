@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Card from '../../components/Card';
 import * as Icons from '../../constants';
-import { Booking, BookingStatus } from '../../types';
+import { Booking, BookingStatus, UserRole } from '../../types';
 
 // Mock data for queue management
 const mockQueueData: Booking[] = [
@@ -13,7 +13,7 @@ const mockQueueData: Booking[] = [
         date: '15/12/2567',
         description: 'ขอรับกล้าพันธุ์: กิมซุ่ง จำนวน 500 ต้น',
         status: BookingStatus.PENDING,
-        userType: 'เกษตรกร',
+        userType: UserRole.FARMER,
         userName: 'สมชาย ใจดี',
         address: '123 หมู่ 1 ต.บ้านนา อ.เมือง จ.นครราชสีมา 30000',
         estimatedQuantity: '500 ต้น',
@@ -28,7 +28,7 @@ const mockQueueData: Booking[] = [
         date: '16/12/2567',
         description: 'ขอรับกล้าพันธุ์: ตงลืมแล้ง จำนวน 300 ต้น',
         status: BookingStatus.CONFIRMED,
-        userType: 'เกษตรกร',
+        userType: UserRole.FARMER,
         userName: 'สมหญิง รักดี',
         address: '456 หมู่ 2 ต.บ้านใหม่ อ.เมือง จ.นครราชสีมา 30000',
         estimatedQuantity: '300 ต้น',
@@ -43,7 +43,7 @@ const mockQueueData: Booking[] = [
         date: '17/12/2567',
         description: 'ขอรับกล้าพันธุ์: ไผ่รวก จำนวน 800 ต้น',
         status: BookingStatus.COMPLETED,
-        userType: 'เกษตรกร',
+        userType: UserRole.FARMER,
         userName: 'สมศักดิ์ ใจงาม',
         address: '789 หมู่ 3 ต.บ้านเก่า อ.เมือง จ.นครราชสีมา 30000',
         estimatedQuantity: '800 ต้น',

@@ -39,12 +39,13 @@ const InfoItem: React.FC<{
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     label: string;
     value: string | undefined;
-}> = ({ icon: Icon, label, value }) => (
+    className?: string;
+}> = ({ icon: Icon, label, value, className }) => (
     <div className="flex items-start gap-4">
         <Icon className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: '#005596' }} />
         <div>
             <p className="text-sm text-slate-500" style={{ fontFamily: 'Kanit', fontWeight: 200 }}>{label}</p>
-            <p className="text-xs" style={{ fontFamily: 'Kanit', color: '#1F1F1F', fontWeight: 200 }}>{value || '-'}</p>
+            <p className={`text-xs ${className || ''}`} style={{ fontFamily: 'Kanit', color: '#1F1F1F', fontWeight: 200 }}>{value || '-'}</p>
         </div>
     </div>
 );

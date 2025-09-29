@@ -209,7 +209,6 @@ const FileUploadCard: React.FC<{ title: string; description: string; preview: st
                                             <div className="w-full h-full border border-gray-200 rounded-lg overflow-hidden">
                                                 <iframe 
                                                     src={fileInfo.url} 
-                                                    type="application/pdf"
                                                     className="w-full h-full border-0"
                                                     style={{ minHeight: '200px' }}
                                                     title={`PDF Preview - ${fileInfo.filename}`}
@@ -337,7 +336,6 @@ const MultiFileUploadCard: React.FC<{
                                                 <div className="w-full h-full border border-gray-200 rounded-lg overflow-hidden">
                                                     <iframe 
                                                         src={fileInfo.url} 
-                                                        type="application/pdf"
                                                         className="w-full h-full border-0"
                                                         style={{ minHeight: '150px' }}
                                                         title={`PDF Preview - ${fileInfo.filename}`}

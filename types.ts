@@ -19,6 +19,7 @@ export enum Page {
   MONITORING = 'ระบบติดตามและตรวจสอบ',
   // Farmer/Factory specific pages
   BOOKING = 'จองคิว',
+  CALENDAR = 'ปฎิทิน',
   KNOWLEDGE = 'ข่าวสาร',
   FINANCE = 'การเงินและการขนส่ง',
   PROFILE = 'โปรไฟล์',
@@ -34,6 +35,7 @@ export enum BookingStatus {
   PENDING = 'รอดำเนินการ',
   CONFIRMED = 'ยืนยันแล้ว',
   COMPLETED = 'เสร็จสิ้น',
+  REJECTED = 'ปฏิเสธ',
 }
 
 // Base Interface for Booking

@@ -85,31 +85,26 @@ const PracticeCalendarEnhanced: React.FC<PracticeCalendarEnhancedProps> = ({
                 {
                     text: "สีน้ำเงิน",
                     icon: "icon icon-blue",
-                    color: "#3d85c6",
-                    onClick: args => updateColor(args.source, args.item.color)
+                    onClick: args => updateColor(args.source, "#3d85c6")
                 },
                 {
                     text: "สีเขียว",
                     icon: "icon icon-green",
-                    color: "#6aa84f",
-                    onClick: args => updateColor(args.source, args.item.color)
+                    onClick: args => updateColor(args.source, "#6aa84f")
                 },
                 {
                     text: "สีเหลือง",
                     icon: "icon icon-yellow",
-                    color: "#ecb823",
-                    onClick: args => updateColor(args.source, args.item.color)
+                    onClick: args => updateColor(args.source, "#ecb823")
                 },
                 {
                     text: "สีแดง",
                     icon: "icon icon-red",
-                    color: "#d5663e",
-                    onClick: args => updateColor(args.source, args.item.color)
+                    onClick: args => updateColor(args.source, "#d5663e")
                 },
                 {
                     text: "สีอัตโนมัติ",
-                    color: null,
-                    onClick: args => updateColor(args.source, args.item.color)
+                    onClick: args => updateColor(args.source, null)
                 }
             ]
         }),

@@ -10,7 +10,7 @@ interface BookingMenuProps {
 }
 
 // ข้อมูลเมนูจองคิว
-const BOOKING_MENU_ITEMS = [
+export const BOOKING_MENU_ITEMS = [
     {
         id: 'appointment-list',
         title: 'รายการนัดหมาย',

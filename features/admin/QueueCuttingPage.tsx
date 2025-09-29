@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Card from '../../components/Card';
 import * as Icons from '../../constants';
-import { Booking, BookingStatus } from '../../types';
+import { Booking, BookingStatus, UserRole } from '../../types';
 
 // Mock data for cutting queue management
 const mockCuttingQueueData: Booking[] = [
@@ -13,7 +13,7 @@ const mockCuttingQueueData: Booking[] = [
         date: '18/12/2567',
         description: 'จองคิวตัดไผ่: กิมซุ่ง อายุ 8 เดือน จำนวน 200 ต้น',
         status: BookingStatus.PENDING,
-        userType: 'เกษตรกร',
+        userType: UserRole.FARMER,
         userName: 'สมชาย ใจดี',
         address: '123 หมู่ 1 ต.บ้านนา อ.เมือง จ.นครราชสีมา 30000',
         estimatedQuantity: '200 ต้น',
@@ -28,7 +28,7 @@ const mockCuttingQueueData: Booking[] = [
         date: '19/12/2567',
         description: 'จองคิวตัดไผ่: ตงลืมแล้ง อายุ 10 เดือน จำนวน 150 ต้น',
         status: BookingStatus.CONFIRMED,
-        userType: 'เกษตรกร',
+        userType: UserRole.FARMER,
         userName: 'สมหญิง รักดี',
         address: '456 หมู่ 2 ต.บ้านใหม่ อ.เมือง จ.นครราชสีมา 30000',
         estimatedQuantity: '150 ต้น',
@@ -43,7 +43,7 @@ const mockCuttingQueueData: Booking[] = [
         date: '20/12/2567',
         description: 'จองคิวตัดไผ่: ไผ่รวก อายุ 12 เดือน จำนวน 300 ต้น',
         status: BookingStatus.COMPLETED,
-        userType: 'เกษตรกร',
+        userType: UserRole.FARMER,
         userName: 'สมศักดิ์ ใจงาม',
         address: '789 หมู่ 3 ต.บ้านเก่า อ.เมือง จ.นครราชสีมา 30000',
         estimatedQuantity: '300 ต้น',

@@ -1,16 +1,17 @@
 // Context สำหรับการจัดการ State ของแอปพลิเคชัน
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { User, Booking, Factory, Article } from '../services/database';
-import ApiService from '../services/apiService';
+import { User, Factory, Article } from '../services/database';
+import { FarmerBooking, KnowledgeArticle } from '../types';
+// import ApiService from '../services/apiService'; // ไม่ได้ใช้งานในขณะนี้
 import * as mockData from '../data/mockData';
 import { useMockData } from '../utils/environment';
 
 // Types
 interface AppState {
   currentUser: User | null;
-  bookings: Booking[];
+  bookings: FarmerBooking[];
   factories: Factory[];
-  articles: Article[];
+  articles: KnowledgeArticle[];
   loading: boolean;
   error: string | null;
 }
@@ -19,17 +20,17 @@ type AppAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_CURRENT_USER'; payload: User | null }
-  | { type: 'SET_BOOKINGS'; payload: Booking[] }
-  | { type: 'ADD_BOOKING'; payload: Booking }
-  | { type: 'UPDATE_BOOKING'; payload: Booking }
+  | { type: 'SET_BOOKINGS'; payload: FarmerBooking[] }
+  | { type: 'ADD_BOOKING'; payload: FarmerBooking }
+  | { type: 'UPDATE_BOOKING'; payload: FarmerBooking }
   | { type: 'DELETE_BOOKING'; payload: string }
   | { type: 'SET_FACTORIES'; payload: Factory[] }
   | { type: 'ADD_FACTORY'; payload: Factory }
   | { type: 'UPDATE_FACTORY'; payload: Factory }
   | { type: 'DELETE_FACTORY'; payload: string }
-  | { type: 'SET_ARTICLES'; payload: Article[] }
-  | { type: 'ADD_ARTICLE'; payload: Article }
-  | { type: 'UPDATE_ARTICLE'; payload: Article }
+  | { type: 'SET_ARTICLES'; payload: KnowledgeArticle[] }
+  | { type: 'ADD_ARTICLE'; payload: KnowledgeArticle }
+  | { type: 'UPDATE_ARTICLE'; payload: KnowledgeArticle }
   | { type: 'DELETE_ARTICLE'; payload: string }
   | { type: 'CLEAR_ALL_DATA' };
 
@@ -119,14 +120,14 @@ const AppContext = createContext<{
   loadBookings: (userId: string) => Promise<void>;
   loadFactories: () => Promise<void>;
   loadArticles: () => Promise<void>;
-  createBooking: (bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
-  updateBooking: (id: string, updates: Partial<Booking>) => Promise<boolean>;
+  createBooking: (bookingData: Omit<FarmerBooking, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
+  updateBooking: (id: string, updates: Partial<FarmerBooking>) => Promise<boolean>;
   deleteBooking: (id: string) => Promise<boolean>;
   createFactory: (factoryData: Omit<Factory, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
   updateFactory: (id: string, updates: Partial<Factory>) => Promise<boolean>;
   deleteFactory: (id: string) => Promise<boolean>;
-  createArticle: (articleData: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
-  updateArticle: (id: string, updates: Partial<Article>) => Promise<boolean>;
+  createArticle: (articleData: Omit<KnowledgeArticle, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
+  updateArticle: (id: string, updates: Partial<KnowledgeArticle>) => Promise<boolean>;
   deleteArticle: (id: string) => Promise<boolean>;
 } | null>(null);
 
@@ -140,7 +141,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
 
-      const user = await ApiService.getUserByEmail(email);
+      // const user = await ApiService.getUserByEmail(email);
+      const user = null; // Mock data for now
       if (user && user.password === password) {
         dispatch({ type: 'SET_CURRENT_USER', payload: user });
         await loadUserData(user.id);
@@ -160,7 +162,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
 
-      const user = await ApiService.getUserByLineId(lineUserId);
+      // const user = await ApiService.getUserByLineId(lineUserId);
+      const user = null; // Mock data for now
       if (user) {
         dispatch({ type: 'SET_CURRENT_USER', payload: user });
         await loadUserData(user.id);
@@ -189,16 +192,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: 'SET_FACTORIES', payload: [] }); // ไม่มี factories ใน mockData
         dispatch({ type: 'SET_ARTICLES', payload: mockData.knowledgeArticles });
       } else {
-        // ใน production mode ใช้ database
-        const [bookings, factories, articles] = await Promise.all([
-          ApiService.getBookingsByFarmerId(userId),
-          ApiService.getAllFactories(),
-          ApiService.getPublishedArticles()
-        ]);
+        // ใน production mode ใช้ database (currently disabled)
+        // const [bookings, factories, articles] = await Promise.all([
+        //   ApiService.getBookingsByFarmerId(userId),
+        //   ApiService.getAllFactories(),
+        //   ApiService.getPublishedArticles()
+        // ]);
 
-        dispatch({ type: 'SET_BOOKINGS', payload: bookings });
-        dispatch({ type: 'SET_FACTORIES', payload: factories });
-        dispatch({ type: 'SET_ARTICLES', payload: articles });
+        // dispatch({ type: 'SET_BOOKINGS', payload: bookings });
+        // dispatch({ type: 'SET_FACTORIES', payload: factories });
+        // dispatch({ type: 'SET_ARTICLES', payload: articles });
+        
+        // Fallback to mock data for now
+        dispatch({ type: 'SET_BOOKINGS', payload: mockData.farmerBookings });
+        dispatch({ type: 'SET_FACTORIES', payload: [] });
+        dispatch({ type: 'SET_ARTICLES', payload: mockData.knowledgeArticles });
       }
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'เกิดข้อผิดพลาดในการโหลดข้อมูล' });
@@ -212,7 +220,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (useMockData) {
         dispatch({ type: 'SET_BOOKINGS', payload: mockData.farmerBookings });
       } else {
-        const bookings = await ApiService.getBookingsByFarmerId(userId);
+        // const bookings = await ApiService.getBookingsByFarmerId(userId);
+      const bookings = mockData.farmerBookings; // Mock data
         dispatch({ type: 'SET_BOOKINGS', payload: bookings });
       }
     } catch (error) {
@@ -225,7 +234,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (useMockData) {
         dispatch({ type: 'SET_FACTORIES', payload: [] }); // ไม่มี factories ใน mockData
       } else {
-        const factories = await ApiService.getAllFactories();
+        // const factories = await ApiService.getAllFactories();
+        const factories = []; // Mock data
         dispatch({ type: 'SET_FACTORIES', payload: factories });
       }
     } catch (error) {
@@ -238,7 +248,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (useMockData) {
         dispatch({ type: 'SET_ARTICLES', payload: mockData.knowledgeArticles });
       } else {
-        const articles = await ApiService.getPublishedArticles();
+        // const articles = await ApiService.getPublishedArticles();
+        const articles = mockData.knowledgeArticles; // Mock data
         dispatch({ type: 'SET_ARTICLES', payload: articles });
       }
     } catch (error) {
@@ -246,9 +257,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const createBooking = async (bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
+  const createBooking = async (bookingData: Omit<FarmerBooking, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
     try {
-      const booking = await ApiService.createBooking(bookingData);
+      // const booking = await ApiService.createBooking(bookingData);
+      const booking = { ...bookingData, id: Date.now().toString() } as FarmerBooking; // Mock
       dispatch({ type: 'ADD_BOOKING', payload: booking });
       return true;
     } catch (error) {
@@ -257,9 +269,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateBooking = async (id: string, updates: Partial<Booking>): Promise<boolean> => {
+  const updateBooking = async (id: string, updates: Partial<FarmerBooking>): Promise<boolean> => {
     try {
-      const booking = await ApiService.updateBooking(id, updates);
+      // const booking = await ApiService.updateBooking(id, updates);
+      const booking = { ...updates, id } as FarmerBooking; // Mock
       if (booking) {
         dispatch({ type: 'UPDATE_BOOKING', payload: booking });
         return true;
@@ -273,7 +286,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const deleteBooking = async (id: string): Promise<boolean> => {
     try {
-      const result = await ApiService.deleteBooking(id);
+      // const result = await ApiService.deleteBooking(id);
+      const result = true; // Mock
       if (result) {
         dispatch({ type: 'DELETE_BOOKING', payload: id });
         return true;
@@ -287,7 +301,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const createFactory = async (factoryData: Omit<Factory, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
     try {
-      const factory = await ApiService.createFactory(factoryData);
+      // const factory = await ApiService.createFactory(factoryData);
+      const factory = { ...factoryData, id: Date.now().toString() } as Factory; // Mock
       dispatch({ type: 'ADD_FACTORY', payload: factory });
       return true;
     } catch (error) {
@@ -298,7 +313,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const updateFactory = async (id: string, updates: Partial<Factory>): Promise<boolean> => {
     try {
-      const factory = await ApiService.updateFactory(id, updates);
+      // const factory = await ApiService.updateFactory(id, updates);
+      const factory = { ...updates, id } as Factory; // Mock
       if (factory) {
         dispatch({ type: 'UPDATE_FACTORY', payload: factory });
         return true;
@@ -312,7 +328,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const deleteFactory = async (id: string): Promise<boolean> => {
     try {
-      const result = await ApiService.deleteFactory(id);
+      // const result = await ApiService.deleteFactory(id);
+      const result = true; // Mock
       if (result) {
         dispatch({ type: 'DELETE_FACTORY', payload: id });
         return true;
@@ -324,9 +341,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const createArticle = async (articleData: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
+  const createArticle = async (articleData: Omit<KnowledgeArticle, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
     try {
-      const article = await ApiService.createArticle(articleData);
+      // const article = await ApiService.createArticle(articleData);
+      const article = { ...articleData, id: Date.now().toString() } as KnowledgeArticle; // Mock
       dispatch({ type: 'ADD_ARTICLE', payload: article });
       return true;
     } catch (error) {
@@ -335,9 +353,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateArticle = async (id: string, updates: Partial<Article>): Promise<boolean> => {
+  const updateArticle = async (id: string, updates: Partial<KnowledgeArticle>): Promise<boolean> => {
     try {
-      const article = await ApiService.updateArticle(id, updates);
+      // const article = await ApiService.updateArticle(id, updates);
+      const article = { ...updates, id } as KnowledgeArticle; // Mock
       if (article) {
         dispatch({ type: 'UPDATE_ARTICLE', payload: article });
         return true;
@@ -351,7 +370,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const deleteArticle = async (id: string): Promise<boolean> => {
     try {
-      const result = await ApiService.deleteArticle(id);
+      // const result = await ApiService.deleteArticle(id);
+      const result = true; // Mock
       if (result) {
         dispatch({ type: 'DELETE_ARTICLE', payload: id });
         return true;

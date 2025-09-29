@@ -7,6 +7,16 @@ import { UserRole } from '../types';
 const isDevelopment = (import.meta as any).env?.DEV;
 const isProduction = (import.meta as any).env?.PROD;
 
+// ตรวจสอบ environment จาก URL หรือ environment variable
+const isProductionByUrl = typeof window !== 'undefined' && 
+  (window.location.hostname !== 'localhost' && 
+   window.location.hostname !== '127.0.0.1' &&
+   !window.location.hostname.includes('ngrok'));
+
+// ใช้ environment variable หรือ URL detection
+const isProductionMode = isProduction || isProductionByUrl;
+const isDevelopmentMode = isDevelopment && !isProductionByUrl;
+
 // ฟังก์ชันสำหรับดึง environment variables
 const getEnvVar = (key: string, defaultValue: string = ''): string => {
   return (import.meta as any).env?.[key] || defaultValue;
@@ -35,7 +45,7 @@ const getProductionDomain = (): string => {
 
 // ฟังก์ชันสำหรับดึงโดเมนที่ใช้จริง (development หรือ production)
 const getActiveDomain = (): string => {
-  if (isDevelopment) {
+  if (isDevelopmentMode) {
     return getCurrentDomain();
   }
   return getProductionDomain();
@@ -44,8 +54,8 @@ const getActiveDomain = (): string => {
 // Configuration หลัก
 export const APP_CONFIG = {
   // Environment
-  isDevelopment,
-  isProduction,
+  isDevelopment: isDevelopmentMode,
+  isProduction: isProductionMode,
   
   // Domains
   currentDomain: getCurrentDomain(),
@@ -139,7 +149,7 @@ export const createAllRoleLinks = () => {
 // Debug function
 export const debugConfig = () => {
   console.log('App Configuration:', {
-    environment: isDevelopment ? 'development' : 'production',
+    environment: isProductionMode ? 'production' : 'development',
     activeDomain: APP_CONFIG.activeDomain,
     isNgrok: APP_CONFIG.isNgrok,
     lineChannelId: APP_CONFIG.lineChannelId ? 'configured' : 'missing',

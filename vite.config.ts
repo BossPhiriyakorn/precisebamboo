@@ -4,11 +4,28 @@ import { defineConfig, loadEnv } from 'vite';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     
-    // อ่าน ngrok domain จาก environment variables
+    // อ่าน domain จาก environment variables
     const appDomain = env.VITE_APP_DOMAIN || 'http://localhost:5173';
     const isNgrok = appDomain.includes('ngrok') || appDomain.includes('ngrok-free.app');
+    const isProduction = mode === 'production';
     
     return {
+      // Production build settings
+      build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
+        sourcemap: false, // ปิด sourcemap ใน production
+        minify: 'terser',
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              vendor: ['react', 'react-dom'],
+              daypilot: ['@daypilot/daypilot-lite-react'],
+              utils: ['moment', 'pdfjs-dist']
+            }
+          }
+        }
+      },
       server: {
         host: '0.0.0.0', // อนุญาตการเข้าถึงจากทุก IP
         port: 5173,

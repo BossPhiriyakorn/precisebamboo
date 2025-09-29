@@ -5,7 +5,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Booking, BookingStatus, Page, Plot } from '../../types';
 import * as Icons from '../../constants';
 import FarmerHeader from './FarmerHeader';
-import BookingMenu from '../../components/BookingMenu';
+import BookingMenu, { BOOKING_MENU_ITEMS } from '../../components/BookingMenu';
 import { mockPlots, mockBambooSpeciesList } from '../../data/mockData';
 
 // Props
@@ -312,7 +312,7 @@ const FarmerBookingPage: React.FC<FarmerBookingPageProps> = ({ bookings, onAddBo
     const handleConfirmNewBooking = (data: Partial<Booking>) => {
         onAddBooking({
             ...data,
-            type: listFilterType || BOOKING_MENU_ITEMS.SEEDLING.type,
+            type: listFilterType || 'จองคิวรับกล้าพันธุ์',
             description: `ขอรับกล้าพันธุ์: ${data.bambooSpecies}`,
             supervisorName: 'สมพง มีเงิน', // Mock supervisor
         });

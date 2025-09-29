@@ -7,10 +7,13 @@
     "dev": "vite --host 0.0.0.0 --port 5173",
     "dev:local": "vite --host localhost --port 5173",
     "build": "vite build",
+    "build:prod": "vite build --mode production",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
-    "preview:local": "vite preview --host localhost --port 4173"
+    "preview:local": "vite preview --host localhost --port 4173",
+    "preview:prod": "vite preview --host 0.0.0.0 --port 4173 --mode production"
   },
   "dependencies": {
+    "@daypilot/daypilot-lite-react": "^4.6.1",
     "moment": "^2.30.1",
     "pdfjs-dist": "^5.4.149",
     "react": "^19.1.0",
@@ -20,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "terser": "^5.44.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }
